@@ -1,0 +1,72 @@
+h1 {
+color: #2c3e50;
+}
+.form-control:focus {
+box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+}
+
+body {
+background-color: #f8f9fa; 
+color: #343a40; 
+font-family: 'Arial', sans-serif; 
+}
+
+.navbar {
+background-color: #008342; 
+color: #ffffff; 
+}
+
+.nav-link:hover {
+color: #141414 !important; 
+}
+
+.container {
+padding: 20px;
+border-radius: 8px; 
+}
+
+.form-control {
+border-color: #ced4da;
+box-shadow: none;
+}
+
+.form-control:focus {
+border-color: #28a745; 
+box-shadow: 0 0 5px rgba(40, 167, 69, 0.5); 
+}
+
+
+button.btn-primary {
+background-color: #008342 !important; 
+border-color: #008342 !important;
+}
+
+button.btn-primary:hover {
+background-color: #006935 !important; 
+}
+
+button.btn-secondary {
+background-color: #6c757d !important; 
+border-color: #6c757d !important;
+}
+
+button.btn-secondary:hover {
+background-color: #5a6268 !important;
+border-color: #5a6268 !important;
+}
+.form-control {
+max-width: 300px;
+margin-left: auto;
+margin-right: auto;
+}
+
+.itinerary-title + p {
+max-width: 300px;
+margin-left: auto;
+margin-right: auto;
+}
+
+.form-group label.form-label {
+display: block !important;
+text-align: center !important;
+}
