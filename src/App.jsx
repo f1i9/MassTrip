@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { Navbar, Nav, Container } from 'react-bootstrap';
 import Home from './components/Home';
 import Itinerary_Creation_Page from './components/Itinerary_Creation_Page';
+import Login from "./components/Login";
+import SignUp from './components/Signup';
 import './styles/custom.css'; 
 
 function App() {
@@ -26,6 +28,9 @@ function App() {
               <Nav.Link as={Link} to="/itinerary_creation" className="text-white">
                 Itinerary Creation
               </Nav.Link>
+              <Nav.Link as={Link} to="/login" className="text-white">
+                Login
+              </Nav.Link>
             </Nav>
           </Navbar>
 
@@ -37,6 +42,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/itinerary_creation" element={<Itinerary_Creation_Page />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
         </Routes>
       </Container>
 
