@@ -4,6 +4,8 @@ import Home from './components/Home';
 import Itinerary_Creation_Page from './components/Itinerary_Creation_Page';
 import Login from "./components/Login";
 import SignUp from './components/Signup';
+import Final_Itinerary from "./components/Final_Itinerary";
+import Footer from "./components/Footer";
 import './styles/custom.css'; 
 
 function App() {
@@ -25,11 +27,20 @@ function App() {
               <Nav.Link as={Link} to="/" className="text-white">
                 Home
               </Nav.Link>
+              <Nav.Link as={Link} to="/final_itinerary" className="text-white">
+                Final
+              </Nav.Link>
               <Nav.Link as={Link} to="/itinerary_creation" className="text-white">
-                Itinerary Creation
+                Create a Road Trip
+              </Nav.Link>
+              <Nav.Link as={Link} to="/" className="text-white">
+                Add a Landmark
+              </Nav.Link>
+              <Nav.Link as={Link} to="/" className="text-white">
+                Contact and FAQ
               </Nav.Link>
               <Nav.Link as={Link} to="/login" className="text-white">
-                Login
+                Sign up/Login
               </Nav.Link>
             </Nav>
           </Navbar>
@@ -41,13 +52,16 @@ function App() {
       <Container className="mt-5" style={{minHeight: '100vh'}}>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/final_itinerary" element={<Final_Itinerary />} />
           <Route path="/itinerary_creation" element={<Itinerary_Creation_Page />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
         </Routes>
       </Container>
-
+{/* Footer will be displayed here */}
+<Footer />
     </Router>
+    
   );
 }
 
