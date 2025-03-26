@@ -12,7 +12,7 @@ app.get('/api/location', async (req, res) => {
     // getting user's location based on their IP address
     const ipResponse = await axios.get('http://ip-api.com/json');
     const { lat, lon } = ipResponse.data;
-
+    console.log(ipResponse.data);
     res.json({ latitude: lat, longitude: lon });
   } catch (error) {
     console.error(error);
