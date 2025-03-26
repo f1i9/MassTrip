@@ -12,8 +12,9 @@ function App() {
   return (
     <Router>
       {/* Navigation Bar */}
-      <Navbar>
-          
+      {/* <Navbar> */}
+      <Navbar style={{ height: '80px' }}>
+
         <Container>
           
           {/* MassTrip */}

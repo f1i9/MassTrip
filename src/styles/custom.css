@@ -12,7 +12,7 @@ font-family: 'Arial', sans-serif;
 }
 
 .navbar {
-background-color: #008342; 
+background-color: #00b97e; 
 color: #ffffff; 
 height: 60px;
 }
@@ -20,6 +20,7 @@ height: 60px;
 .nav-item {
     margin-left: 20px;
 }
+
 
 .nav-link:hover {
 /* color: #141414 !important;  */
@@ -75,4 +76,45 @@ margin-right: auto;
 .form-group label.form-label {
 display: block !important;
 text-align: center !important;
+}
+
+.search-input::placeholder {
+color: rgba(255, 255, 255, 0.7) !important;
+/* width: 100% !important; 
+max-width: 500px !important; */
+}
+
+input.search-input {
+background-color: #00b97e !important;
+border-color: #00b97e !important;
+color: white !important;
+}
+
+input.search-input::placeholder {
+color: white !important;
+opacity: 0.8;
+}
+
+button.btn-primary {
+background-color: #00b97e !important;
+border-color: #00b97e !important;
+color: white !important;
+}
+
+button.btn-primary:hover,
+button.btn-primary:focus,
+button.btn-primary:active {
+background-color: #009766 !important;
+border-color: #009766 !important;
+}
+
+#regenerate-btn, #roadtrip-btn {
+background-color: #005f46 !important; /* Darker green */
+border-color: #005f46 !important;
+}
+
+#regenerate-btn:hover, #regenerate-btn:focus, #regenerate-btn:active,
+#roadtrip-btn:hover, #roadtrip-btn:focus, #roadtrip-btn:active {
+background-color: #001f16 !important; 
+border-color: #001f16 !important;
 }
