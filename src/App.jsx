@@ -7,6 +7,8 @@ import SignUp from './components/Signup';
 import Final_Itinerary from "./components/Final_Itinerary";
 import Footer from "./components/Footer";
 import './styles/custom.css'; 
+import ContactUs from './components/ContactUsPage'
+import FAQ from './components/FAQpage'
 
 function App() {
   return (
@@ -34,7 +36,7 @@ function App() {
               <Nav.Link as={Link} to="/" className="text-white">
                 Add a Landmark
               </Nav.Link>
-              <Nav.Link as={Link} to="/" className="text-white">
+              <Nav.Link as={Link} to="/contactUs" className="text-white">
                 Contact and FAQ
               </Nav.Link>
               <Nav.Link as={Link} to="/login" className="text-white">
@@ -53,6 +55,8 @@ function App() {
           <Route path="/itinerary_creation" element={<Itinerary_Creation_Page />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/contactUs" element={<ContactUs />} />
+          <Route path="/faq" element={<FAQ />} />
         </Routes>
       </Container>
 {/* Footer will be displayed here */}
