@@ -27,9 +27,6 @@ function App() {
               <Nav.Link as={Link} to="/" className="text-white">
                 Home
               </Nav.Link>
-              <Nav.Link as={Link} to="/final_itinerary" className="text-white">
-                Final
-              </Nav.Link>
               <Nav.Link as={Link} to="/itinerary_creation" className="text-white">
                 Create a Road Trip
               </Nav.Link>
@@ -52,7 +49,6 @@ function App() {
       <Container className="mt-5" style={{minHeight: '100vh'}}>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/final_itinerary" element={<Final_Itinerary />} />
           <Route path="/itinerary_creation" element={<Itinerary_Creation_Page />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
