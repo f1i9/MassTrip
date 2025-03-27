@@ -9,6 +9,7 @@ import Footer from "./components/Footer";
 import './styles/custom.css'; 
 import ContactUs from './components/Contact_Us_Page'
 import FAQ from './components/FAQpage'
+import AddLandmark from './components/AddLandmark';
 
 function App() {
   return (
@@ -33,7 +34,7 @@ function App() {
               <Nav.Link as={Link} to="/itinerary_creation" className="text-white">
                 Create a Road Trip
               </Nav.Link>
-              <Nav.Link as={Link} to="/" className="text-white">
+              <Nav.Link as={Link} to="/addlandmark" className="text-white">
                 Add a Landmark
               </Nav.Link>
               <Nav.Link as={Link} to="/contactUs" className="text-white">
@@ -57,6 +58,7 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/contactUs" element={<ContactUs />} />
           <Route path="/faq" element={<FAQ />} />
+          <Route path="/addlandmark" element={<AddLandmark />} />
         </Routes>
       </Container>
 {/* Footer will be displayed here */}
