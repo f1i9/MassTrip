@@ -35,7 +35,7 @@ function Itinerary_Creation_Page() {
         },
       });
   
-      console.log('Nearby attractions:', nearbyResponse.data);
+      // console.log('Nearby attractions:', nearbyResponse.data);
   
       const attractions = nearbyResponse.data.map((place, index) => ({
         id: `item-${index}`,
@@ -44,7 +44,8 @@ function Itinerary_Creation_Page() {
         location: place.location,
       }));
   
-      console.log('Mapped attractions:', attractions);
+      // console.log('Mapped attractions:', attractions);
+
       setAttractionItems(attractions);
     } catch (err) {
       console.error('Error fetching location or attractions:', err);
@@ -55,7 +56,7 @@ function Itinerary_Creation_Page() {
   };
 
   const handleRegenerate = () => {
-    console.log('Regenerate button clicked');
+    // console.log('Regenerate button clicked');
     fetchNearbyAttractions();
   };
 
