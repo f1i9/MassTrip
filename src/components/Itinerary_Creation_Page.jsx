@@ -11,52 +11,81 @@ function Itinerary_Creation_Page() {
   const [selectedItems, setSelectedItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  const maxItems = 100;
 
   const fetchNearbyAttractions = async () => {
     if (!searchQuery.trim()) {
       setError('Please enter a type of attraction to search for');
       return;
     }
-  
+
     setLoading(true);
     setError(null);
-    console.log('Fetching nearby attractions for type:', searchQuery);
-  
-    try {
-      const locationResponse = await axios.get('http://localhost:3001/api/location');
-      const { latitude, longitude } = locationResponse.data;
-  
-      const nearbyResponse = await axios.get('http://localhost:3001/api/nearby', {
-        params: {
-          lat: latitude,
-          lng: longitude,
-          radius: parseInt(radius) || 20000,
-          type: searchQuery.toLowerCase().trim(),
-        },
-      });
-  
-      // console.log('Nearby attractions:', nearbyResponse.data);
-  
-      const attractions = nearbyResponse.data.map((place, index) => ({
-        id: `item-${index}`,
-        name: place.name,
-        vicinity: place.vicinity,
-        location: place.location,
-      }));
-  
-      // console.log('Mapped attractions:', attractions);
 
-      setAttractionItems(attractions);
-    } catch (err) {
-      console.error('Error fetching location or attractions:', err);
-      setError('Failed to fetch attractions. Please try again or check the attraction type.');
-    } finally {
-      setLoading(false);
+    const useNearbySearch = async (latitude, longitude) => {
+      try {
+        const nearbyResponse = await axios.get('http://localhost:3001/api/nearby', {
+          params: {
+            lat: latitude,
+            lng: longitude,
+            radius: parseInt(radius) || 20000,
+            type: searchQuery.toLowerCase().trim(),
+          },
+        });
+
+        const attractions = nearbyResponse.data.slice(0, maxItems).map((place, index) => ({
+          id: `item-${index}`,
+          name: place.name,
+          vicinity: place.vicinity,
+          location: place.location,
+        }));
+
+        setAttractionItems(attractions);
+        setCurrentPage(1);
+      } catch (err) {
+        console.error('Error fetching nearby attractions:', err);
+        setError('Failed to fetch attractions. Please try again or check the attraction type.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fallbackToIP = async () => {
+      try {
+        const locationResponse = await axios.get('http://localhost:3001/api/location');
+        const { latitude, longitude } = locationResponse.data;
+        await useNearbySearch(latitude, longitude);
+      } catch (err) {
+        console.error('Fallback IP location failed:', err);
+        setError('Failed to get location. Please allow GPS or try again later.');
+        setLoading(false);
+      }
+    };
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          await useNearbySearch(latitude, longitude);
+        },
+        async (error) => {
+          console.warn('Geolocation failed:', error.message);
+          await fallbackToIP();
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0,
+        }
+      );
+    } else {
+      await fallbackToIP();
     }
   };
 
   const handleRegenerate = () => {
-    // console.log('Regenerate button clicked');
     fetchNearbyAttractions();
   };
 
@@ -67,23 +96,29 @@ function Itinerary_Creation_Page() {
     items.splice(result.destination.index, 0, reorderedItem);
     setAttractionItems(items);
   };
-  
+
   const addToItinerary = (item) => {
     setSelectedItems([...selectedItems, item]);
   };
-  
+
   const removeAttraction = (id) => {
     setAttractionItems(attractionItems.filter(item => item.id !== id));
   };
-  
+
   const removeFromItinerary = (id) => {
     setSelectedItems(selectedItems.filter(item => item.id !== id));
   };
 
+  const totalPages = Math.min(10, Math.ceil(attractionItems.length / itemsPerPage));
+  const paginatedItems = attractionItems.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   return (
     <Container fluid className="mt-5">
       <Row>
-        {/* Column 1 (Left) - Input Fields */}
+        {/* Left column - inputs */}
         <Col md={3} className="mt-5 pt-4">
           <Form>
             <Form.Group className="mb-3">
@@ -124,8 +159,8 @@ function Itinerary_Creation_Page() {
             </Form.Group>
           </Form>
         </Col>
-        
-        {/* Column 2 (Center) - Search and Drag-Drop Items */}
+
+        {/* Middle column - attraction list and controls */}
         <Col md={6}>
           <Form.Group className="mb-3">
             <InputGroup style={{ display: 'block', width: '100%' }}>
@@ -139,7 +174,7 @@ function Itinerary_Creation_Page() {
               />
             </InputGroup>
           </Form.Group>
-          
+
           <DragDropContext onDragEnd={handleDragEnd}>
             <Droppable droppableId="attractions">
               {(provided) => (
@@ -152,10 +187,10 @@ function Itinerary_Creation_Page() {
                     <p>Loading nearby attractions...</p>
                   ) : error ? (
                     <p className="text-danger">{error}</p>
-                  ) : attractionItems.length === 0 ? (
+                  ) : paginatedItems.length === 0 ? (
                     <p>No attractions found. Click "Regenerate" to search.</p>
                   ) : (
-                    attractionItems.map((item, index) => (
+                    paginatedItems.map((item, index) => (
                       <Draggable key={item.id} draggableId={item.id} index={index}>
                         {(provided) => (
                           <Card 
@@ -194,6 +229,20 @@ function Itinerary_Creation_Page() {
             </Droppable>
           </DragDropContext>
 
+          <div className="d-flex justify-content-center mt-3">
+            {[...Array(totalPages)].map((_, idx) => (
+              <Button 
+                key={idx} 
+                variant={currentPage === idx + 1 ? 'primary' : 'outline-primary'} 
+                size="sm"
+                className="mx-1 rounded-circle"
+                onClick={() => setCurrentPage(idx + 1)}
+              >
+                {idx + 1}
+              </Button>
+            ))}
+          </div>
+
           <div className="fixed-info-container">
             <Card className="border-0 bg-light rounded-4 mt-3">
               <Card.Body>
@@ -215,8 +264,8 @@ function Itinerary_Creation_Page() {
             </Button>
           </div>
         </Col>
-        
-        {/* Column 3 (Right) - Selected Items */}
+
+        {/* Right column - current itinerary */}
         <Col md={3}>
           <div className="selected-items-container p-3 border rounded bg-light border-0 rounded-4">
             <h6 className="text-center">Current Itinerary</h6>

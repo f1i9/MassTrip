@@ -14,10 +14,14 @@
     "axios": "^1.8.4",
     "bootstrap": "^5.3.3",
     "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "install": "^0.13.0",
+    "npm": "^11.2.0",
     "react": "^18.3.1",
     "react-beautiful-dnd": "^13.1.1",
     "react-bootstrap": "^2.10.9",
     "react-dom": "^18.3.1",
+    "react-icons": "^5.5.0",
     "react-pdf": "^9.2.1",
     "react-router-dom": "^7.3.0"
   },
@@ -31,5 +35,18 @@
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^15.15.0",
     "vite": "^6.2.0"
-  }
+  },
+  "description": "following packages need to be installed:",
+  "main": "eslint.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/f1i9/MassTrip.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/f1i9/MassTrip/issues"
+  },
+  "homepage": "https://github.com/f1i9/MassTrip#readme"
 }
