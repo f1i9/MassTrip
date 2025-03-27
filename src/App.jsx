@@ -7,7 +7,7 @@ import SignUp from './components/Signup';
 import Final_Itinerary from "./components/Final_Itinerary";
 import Footer from "./components/Footer";
 import './styles/custom.css'; 
-import ContactUs from './components/ContactUsPage'
+import ContactUs from './components/Contact_Us_Page'
 import FAQ from './components/FAQpage'
 
 function App() {

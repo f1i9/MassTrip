@@ -9,7 +9,7 @@ import {useState} from 'react';
 import {Container, Row, Col, Form, Button, Alert} from 'react-bootstrap';
 // import icons
 import {FaFacebook, FaInstagram} from 'react-icons/fa';
-import '../Styles/ContactUs.css'; // Import the specific CSS file for ContactUs
+import '../styles/Contact_Us.css'; // Import the specific CSS file for ContactUs
 
 
 function ContactUs() {
