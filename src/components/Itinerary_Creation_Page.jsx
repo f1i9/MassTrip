@@ -15,6 +15,11 @@ function Itinerary_Creation_Page() {
   const itemsPerPage = 10;
   const maxItems = 100;
 
+
+
+  
+
+
   const fetchNearbyAttractions = async () => {
     if (!searchQuery.trim()) {
       setError('Please enter a type of attraction to search for');
@@ -169,6 +174,14 @@ function Itinerary_Creation_Page() {
                 placeholder="Search attractions..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                // Evan Kuczynski
+                // if enter button is pressed it has the same results of the generate button
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter'){
+                    e.preventDefault();
+                    handleRegenerate();
+                  }
+                }}
                 className="bg-success border-0 rounded-pill search-input fs-9 py-3 text-white"
                 style={{ width: '100%', maxWidth: '95%', fontWeight: 'bold' }}
               />
@@ -182,6 +195,11 @@ function Itinerary_Creation_Page() {
                   {...provided.droppableProps}
                   ref={provided.innerRef}
                   className="attractions-container"
+                  style={{
+                    maxHeight: '400px', // set the height of google api results
+                    overflow: 'auto',
+                    paddingRight: '5px' // avoiding scrollbar overlap
+                  }}
                 >
                   {loading ? (
                     <p>Loading nearby attractions...</p>
@@ -260,7 +278,8 @@ function Itinerary_Creation_Page() {
               className="flex-grow-1" 
               onClick={handleRegenerate}
             >
-              Regenerate
+              {/* changed name of button from regenerate to generate */}
+              Generate 
             </Button>
           </div>
         </Col>
