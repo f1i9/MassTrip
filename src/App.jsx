@@ -10,47 +10,190 @@ import './styles/custom.css';
 import ContactUs from './components/Contact_Us_Page'
 import FAQ from './components/FAQpage'
 import AddLandmark from './components/AddLandmark';
+import React, { useState, useEffect, useRef } from 'react';
+
+
+
+
 
 function App() {
+  // keep track of whether the nav menu is open or closed
+  const [isNavExpanded, setIsNavExpanded] = useState(false);
+  // check if we're on a mobile screen (less than 992px wide)
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
+
+  // refs to help us detect clicks outside the nav or toggle button
+  const navRef = useRef(null);
+  const toggleRef = useRef(null);
+
+  // close the menu when a link is clicked
+  const handleLinkClick = () => {
+    setIsNavExpanded(false);
+  };
+
+  // set up some listeners when the component loads
+  useEffect(() => {
+    // update isMobile when the window size changes
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 992);
+    };
+
+    // close the menu if someone clicks outside it
+    const handleClickOutside = (event) => {
+      if (
+        isNavExpanded &&
+        navRef.current &&
+        !navRef.current.contains(event.target) &&
+        toggleRef.current &&
+        !toggleRef.current.contains(event.target)
+      ) {
+        setIsNavExpanded(false);
+      }
+    };
+
+    // add listeners for resize and clicks
+    window.addEventListener('resize', handleResize);
+    document.addEventListener('mousedown', handleClickOutside);
+
+    // clean up listeners when the component unmounts
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isNavExpanded]); // rerun if isNavExpanded changes
+
   return (
+    // wrap everything in a router for navigation
     <Router>
-      {/* Navigation Bar */}
-      {/* <Navbar> */}
-      <Navbar style={{ height: '80px' }}>
+      {/* the main navbar at the top */}
+      <Navbar
+        expand="lg"
+        style={{
+          height: '80px',
+          backgroundColor: '#009766',
+          position: 'relative',
+          zIndex: 1000,
+        }}
+        variant="dark"
+        expanded={isNavExpanded}
+        ref={navRef} // attach ref to track clicks outside
+      >
+        <Container fluid>
+          {/* hamburger button for mobile */}
+          <div
+            style={{
+              position: 'absolute',
+              left: '16px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              zIndex: 1001,
+            }}
+            ref={toggleRef} // ref for the toggle button
+          >
+            <Navbar.Toggle
+              aria-controls="basic-navbar-nav"
+              style={{
+                backgroundColor: 'transparent',
+                border: 'none',
+              }}
+              onClick={() => setIsNavExpanded(!isNavExpanded)} // toggle the menu
+            >
+              <span
+                className="navbar-toggler-icon"
+                style={{
+                  filter: 'brightness(0) invert(1)', // make the icon white
+                  width: '24px',
+                  height: '24px',
+                  display: 'inline-block',
+                }}
+              ></span>
+            </Navbar.Toggle>
+          </div>
 
-        <Container>
-          
-          {/* MassTrip */}
-          <Navbar.Brand as={Link} to="/" className="fw-bold text-white">
-            MassTrip
-          </Navbar.Brand>
+          {/* the masstrip logo in the center */}
+          <div
+            style={{
+              position: 'absolute',
+              left: '50%',
+              top: '50%',
+              transform: 'translate(-50%, -50%)',
+              zIndex: 1000,
+            }}
+          >
+            <Navbar.Brand as={Link} to="/" style={{ color: 'white', fontWeight: 'bold' }}>
+              MassTrip
+            </Navbar.Brand>
+          </div>
 
-          {/* Navigation Bar Items */}
-          <Navbar id="basic-navbar-nav">
-            <Nav>
-              <Nav.Link as={Link} to="/" className="text-white">
+          {/* the menu links that collapse on mobile */}
+          <Navbar.Collapse
+            id="basic-navbar-nav"
+            style={
+              isMobile && isNavExpanded
+                ? {
+                    position: 'absolute',
+                    top: '80px', // slide down below the navbar
+                    left: 0,
+                    width: '100%',
+                    backgroundColor: '#009766',
+                    zIndex: 999,
+                    padding: '1rem',
+                    height: 'calc(100vh - 80px)', // take up rest of the screen
+                    overflowY: 'auto', // scroll if needed
+                  }
+                : {} // empty styles for desktop
+            }
+          >
+            <Nav className="ms-auto">
+              {/* nav links for each page */}
+              <Nav.Link
+                as={Link}
+                to="/"
+                style={{ color: 'white', fontSize: '1.1rem', padding: '0.75rem 1rem' }}
+                onClick={handleLinkClick}
+              >
                 Home
               </Nav.Link>
-              <Nav.Link as={Link} to="/itinerary_creation" className="text-white">
+              <Nav.Link
+                as={Link}
+                to="/itinerary_creation"
+                style={{ color: 'white', fontSize: '1.1rem', padding: '0.75rem 1rem' }}
+                onClick={handleLinkClick}
+              >
                 Create a Road Trip
               </Nav.Link>
-              <Nav.Link as={Link} to="/addlandmark" className="text-white">
+              <Nav.Link
+                as={Link}
+                to="/addlandmark"
+                style={{ color: 'white', fontSize: '1.1rem', padding: '0.75rem 1rem' }}
+                onClick={handleLinkClick}
+              >
                 Add a Landmark
               </Nav.Link>
-              <Nav.Link as={Link} to="/contactUs" className="text-white">
+              <Nav.Link
+                as={Link}
+                to="/contactUs"
+                style={{ color: 'white', fontSize: '1.1rem', padding: '0.75rem 1rem' }}
+                onClick={handleLinkClick}
+              >
                 Contact and FAQ
               </Nav.Link>
-              <Nav.Link as={Link} to="/login" className="text-white">
+              <Nav.Link
+                as={Link}
+                to="/login"
+                style={{ color: 'white', fontSize: '1.1rem', padding: '0.75rem 1rem' }}
+                onClick={handleLinkClick}
+              >
                 Sign up/Login
               </Nav.Link>
             </Nav>
-          </Navbar>
-
+          </Navbar.Collapse>
         </Container>
       </Navbar>
 
-      {/* Navigation Bar Routes*/}
-      <Container className="mt-5" style={{minHeight: '100vh'}}>
+      {/* main content area */}
+      <Container className="mt-5" style={{ minHeight: '100vh' }}>
+        {/* define routes for each page */}
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/itinerary_creation" element={<Itinerary_Creation_Page />} />
@@ -61,10 +204,10 @@ function App() {
           <Route path="/addlandmark" element={<AddLandmark />} />
         </Routes>
       </Container>
-{/* Footer will be displayed here */}
-<Footer />
+
+      {/* footer at the bottom */}
+      <Footer />
     </Router>
-    
   );
 }
 
