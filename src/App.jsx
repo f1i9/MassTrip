@@ -59,6 +59,7 @@ function App() {
           <Route path="/contactUs" element={<ContactUs />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/addlandmark" element={<AddLandmark />} />
+          <Route path="/final_itinerary" element={<Final_Itinerary />} />
         </Routes>
       </Container>
 {/* Footer will be displayed here */}

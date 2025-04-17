@@ -1,7 +1,14 @@
 import { useState } from 'react';
 import { Container, Form, Button } from 'react-bootstrap';
+import { useLocation } from 'react-router-dom';
 
-function Itinerary_Creation_Page() {
+
+
+function Final_Itinerary() {
+
+    const location = useLocation();
+    const selectedItems = location.state?.selectedItems || [];  // Get the selected items from the state, default to empty array
+
     const containerStyle = {
         display: 'flex',
         height: '100vh',
@@ -133,4 +140,4 @@ function Itinerary_Creation_Page() {
   );
 }
 
-export default Itinerary_Creation_Page;
+export default Final_Itinerary;
