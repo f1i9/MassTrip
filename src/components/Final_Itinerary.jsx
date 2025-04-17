@@ -83,50 +83,25 @@ function Final_Itinerary() {
       </div>
       <div style={rightStyle}>
         <div style={listStyle}>
-          <h2 style={{textAlign:'center'}}>Final Itinerary</h2>
+          <h2 style={{ textAlign: 'center' }}>Final Itinerary</h2>
           <ul style={{ listStyleType: 'none', paddingLeft: '0' }}>
-            <li>
-              <div style={cardStyle}>
-                <h6>University of Massachusetts Lowell</h6>
-                <p>220 Pawtucket St, Lowell, MA 01854</p>
-              </div>
-            </li>
-            <li>
-              <div style={cardStyle}>
-              <h6>University of Massachusetts Lowell</h6>
-              <p>220 Pawtucket St, Lowell, MA 01854</p>
-              </div>
-            </li>
-            <li>
-              <div style={cardStyle}>
-              <h6>University of Massachusetts Lowell</h6>
-              <p>220 Pawtucket St, Lowell, MA 01854</p>
-              </div>
-            </li>
-            <li>
-              <div style={cardStyle}>
-              <h6>University of Massachusetts Lowell</h6>
-              <p>220 Pawtucket St, Lowell, MA 01854</p>
-              </div>
-            </li>
-            <li>
-              <div style={cardStyle}>
-              <h6>University of Massachusetts Lowell</h6>
-              <p>220 Pawtucket St, Lowell, MA 01854</p>
-              </div>
-            </li>
-            <li>
-              <div style={cardStyle}>
-              <h6>University of Massachusetts Lowell</h6>
-              <p>220 Pawtucket St, Lowell, MA 01854</p>
-              </div>
-            </li>
-            {/* Add more items as needed */}
+            {/* added the locations wanted by the user to the final interary */}
+            {selectedItems.length > 0 ? (
+              selectedItems.map((item, index) => (
+                <li key={index}>
+                  <div style={cardStyle}>
+                    <h6>{item.name}</h6>
+                    <p>{item.vicinity}</p>
+                  </div>
+                </li>
+              ))
+            ) : (<p>No items in your itinerary.</p>
+            )}
           </ul>
         </div>
         <div style={cardStyle}>
-                <h6 style={{textAlign: 'center'}}>Total Time:</h6>
-              </div>
+          <h6 style={{ textAlign: 'center' }}>Total Time:</h6>
+        </div>
         <button
           style={buttonStyle}
           onMouseEnter={(e) => (e.target.style.backgroundColor = buttonHoverStyle.backgroundColor)}
