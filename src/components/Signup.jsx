@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Container, Form, Button, Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
+
 function SignUp() {
   const [formData, setFormData] = useState({
     email: '',
@@ -29,62 +30,130 @@ function SignUp() {
   };
 
   return (
-    <Container className="d-flex justify-content-center align-items-center min-vh-100">
-      <Card className="p-4 shadow-lg" style={{ width: '350px' }}>
-        <Card.Body>
-          <h2 className="text-center mb-4">Sign Up</h2>
-          <Form onSubmit={handleSignUp}>
-            {/* Email Input */}
-            <Form.Group className="mb-3">
-              <Form.Label>Email address</Form.Label>
-              <Form.Control
-                type="email"
-                name="email"
-                placeholder="Enter email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
-            </Form.Group>
+    <Container className="d-flex flex-column justify-content-center align-items-center min-vh-100">
+      {/* Conditionally render Card for Desktop, otherwise plain layout for Mobile */}
+      <div className="w-100" style={{ maxWidth: '350px' }}>
+        {/* For mobile, we render directly; for desktop, we use a Card */}
+        {window.innerWidth > 768 ? (
+          <Card className="p-4 shadow-lg">
+            <Card.Body>
+              <h2 className="text-center mb-4">Sign Up</h2>
+              <Form onSubmit={handleSignUp}>
+                {/* Email Input */}
+                <Form.Group className="mb-3">
+                  <Form.Label>Email address</Form.Label>
+                  <Form.Control
+                    type="email"
+                    name="email"
+                    placeholder="Enter email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                  />
+                </Form.Group>
 
-            {/* Password Input */}
-            <Form.Group className="mb-3">
-              <Form.Label>Password</Form.Label>
-              <Form.Control
-                type="password"
-                name="password"
-                placeholder="Enter password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
-            </Form.Group>
+                {/* Password Input */}
+                <Form.Group className="mb-3">
+                  <Form.Label>Password</Form.Label>
+                  <Form.Control
+                    type="password"
+                    name="password"
+                    placeholder="Enter password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                  />
+                </Form.Group>
 
-            {/* Confirm Password Input */}
-            <Form.Group className="mb-3">
-              <Form.Label>Confirm Password</Form.Label>
-              <Form.Control
-                type="password"
-                name="confirmPassword"
-                placeholder="Confirm password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                required
-              />
-            </Form.Group>
+                {/* Confirm Password Input */}
+                <Form.Group className="mb-3">
+                  <Form.Label>Confirm Password</Form.Label>
+                  <Form.Control
+                    type="password"
+                    name="confirmPassword"
+                    placeholder="Confirm password"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    required
+                  />
+                </Form.Group>
 
-            {/* Buttons */}
-            <div className="d-grid gap-2">
-              <Button variant="success" type="submit">
-                Sign Up
-              </Button>
-              <Button variant="dark" type="button" onClick={handleBackToLogin}>
-                Back to Login
-              </Button>
-            </div>
-          </Form>
-        </Card.Body>
-      </Card>
+                {/* Buttons */}
+                <div className="d-grid gap-2">
+                  <Button variant="success" type="submit">
+                    Sign Up
+                  </Button>
+                  <Button variant="link" onClick={handleBackToLogin}>
+                    Back to Login
+                  </Button>
+                </div>
+              </Form>
+            </Card.Body>
+          </Card>
+        ) : (
+          // Mobile Layout without Card container
+          // Changed on 4/23/25
+          <>
+            <h2 className="text-center mb-4">Sign Up</h2>
+            <Form onSubmit={handleSignUp}>
+              {/* Email Input */}
+              <Form.Group className="mb-3">
+                <Form.Label>Email address</Form.Label>
+                <Form.Control
+                  type="email"
+                  name="email"
+                  placeholder="Enter email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  // Get shaded background for text fields
+                  style={{ backgroundColor: '#f7f7f7', boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)' }}
+                />
+              </Form.Group>
+
+              {/* Password Input */}
+              <Form.Group className="mb-3">
+                <Form.Label>Password</Form.Label>
+                <Form.Control
+                  type="password"
+                  name="password"
+                  placeholder="Enter password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  // Get shaded background for text fields
+                  style={{ backgroundColor: '#f7f7f7', boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)' }}
+                />
+              </Form.Group>
+
+              {/* Confirm Password Input */}
+              <Form.Group className="mb-3">
+                <Form.Label>Confirm Password</Form.Label>
+                <Form.Control
+                  type="password"
+                  name="confirmPassword"
+                  placeholder="Confirm password"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  required
+                  // Get shaded background for text fields
+                  style={{ backgroundColor: '#f7f7f7', boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)' }}
+                />
+              </Form.Group>
+
+              {/* Buttons */}
+              <div className="d-grid gap-2">
+                <Button variant="success" type="submit">
+                  Sign Up
+                </Button>
+                <Button variant="link" onClick={handleBackToLogin}>
+                  Back to Login
+                </Button>
+              </div>
+            </Form>
+          </>
+        )}
+      </div>
     </Container>
   );
 }
