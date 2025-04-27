@@ -8,7 +8,7 @@ const app = express();
 // Use the Azure-provided port or default to 3001 locally
 const port = process.env.PORT || 3001;
 
-const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
+const GOOGLE_API_KEY = import.meta.env.GOOGLE_API_KEY;
 if (!GOOGLE_API_KEY) {
   console.error('GOOGLE_API_KEY is not set in environment variables.');
   process.exit(1);
