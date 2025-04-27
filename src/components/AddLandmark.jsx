@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Container, Form, Button, Row, Col, Card, Image } from 'react-bootstrap';
+import { Container, Form, Button, Row, Col, Card, Image, Alert } from 'react-bootstrap';
 
 function AddLandmark() {
   const [formData, setFormData] = useState({
@@ -9,6 +9,8 @@ function AddLandmark() {
     category: '',
     images: ['', '', '']
   });
+
+  const [showMessage, setShowMessage] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,6 +30,19 @@ function AddLandmark() {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Submitting landmark:', formData);
+    setShowMessage(true); 
+
+    setFormData({
+      name: '',
+      address: '',
+      description: '',
+      category: '',
+      images: ['', '', '']
+    });
+
+    setTimeout(() => {
+      setShowMessage(false);
+    }, 9000);
   };
 
   return (
@@ -39,6 +54,13 @@ function AddLandmark() {
               <h3 className="mb-4 d-flex align-items-center">
                 <span className="me-2">⭐</span> Add A Landmark
               </h3>
+
+              {showMessage && (
+                <Alert variant="success" onClose={() => setShowMessage(false)} dismissible>
+                  Thank you, your landmark has been submitted!
+                </Alert>
+              )}
+
               <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3">
                   <Form.Control
