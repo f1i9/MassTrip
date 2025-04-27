@@ -11,9 +11,8 @@ import ContactUs from './components/Contact_Us_Page'
 import FAQ from './components/FAQpage'
 import AddLandmark from './components/AddLandmark';
 import React, { useState, useEffect, useRef } from 'react';
-
-
-
+import { useAuth } from "../src/context/AuthContext";
+import AuthForm from "./components/AuthForm";
 
 
 function App() {
@@ -26,19 +25,21 @@ function App() {
   const navRef = useRef(null);
   const toggleRef = useRef(null);
 
+  const { isAuthenticated } = useAuth();
+
+  console.log("isAuthenticated:", isAuthenticated);
+
+
   // close the menu when a link is clicked
   const handleLinkClick = () => {
     setIsNavExpanded(false);
   };
 
-  // set up some listeners when the component loads
   useEffect(() => {
-    // update isMobile when the window size changes
     const handleResize = () => {
       setIsMobile(window.innerWidth < 992);
     };
 
-    // close the menu if someone clicks outside it
     const handleClickOutside = (event) => {
       if (
         isNavExpanded &&
@@ -51,19 +52,16 @@ function App() {
       }
     };
 
-    // add listeners for resize and clicks
     window.addEventListener('resize', handleResize);
     document.addEventListener('mousedown', handleClickOutside);
 
-    // clean up listeners when the component unmounts
     return () => {
       window.removeEventListener('resize', handleResize);
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isNavExpanded]); // rerun if isNavExpanded changes
+  }, [isNavExpanded]); 
 
   return (
-    // wrap everything in a router for navigation
     <Router>
       {/* the main navbar at the top */}
       <Navbar
@@ -76,7 +74,7 @@ function App() {
         }}
         variant="dark"
         expanded={isNavExpanded}
-        ref={navRef} // attach ref to track clicks outside
+        ref={navRef} 
       >
         <Container fluid>
           {/* hamburger button for mobile */}
@@ -88,7 +86,7 @@ function App() {
               transform: 'translateY(-50%)',
               zIndex: 1001,
             }}
-            ref={toggleRef} // ref for the toggle button
+            ref={toggleRef}
           >
             <Navbar.Toggle
               aria-controls="basic-navbar-nav"
@@ -96,12 +94,12 @@ function App() {
                 backgroundColor: 'transparent',
                 border: 'none',
               }}
-              onClick={() => setIsNavExpanded(!isNavExpanded)} // toggle the menu
+              onClick={() => setIsNavExpanded(!isNavExpanded)}
             >
               <span
                 className="navbar-toggler-icon"
                 style={{
-                  filter: 'brightness(0) invert(1)', // make the icon white
+                  filter: 'brightness(0) invert(1)', 
                   width: '24px',
                   height: '24px',
                   display: 'inline-block',
@@ -132,16 +130,16 @@ function App() {
               isMobile && isNavExpanded
                 ? {
                     position: 'absolute',
-                    top: '80px', // slide down below the navbar
+                    top: '80px', 
                     left: 0,
                     width: '100%',
                     backgroundColor: '#009766',
                     zIndex: 999,
                     padding: '1rem',
-                    height: 'calc(100vh - 80px)', // take up rest of the screen
-                    overflowY: 'auto', // scroll if needed
+                    height: 'calc(100vh - 80px)', 
+                    overflowY: 'auto', 
                   }
-                : {} // empty styles for desktop
+                : {} 
             }
           >
             <Nav className="ms-auto">
@@ -180,11 +178,11 @@ function App() {
               </Nav.Link>
               <Nav.Link
                 as={Link}
-                to="/login"
+                to="/signup"
                 style={{ color: 'white', fontSize: '1.1rem', padding: '0.75rem 1rem' }}
                 onClick={handleLinkClick}
               >
-                Sign up/Login
+                {isAuthenticated ? "Log out" : "Login / Sign Up"}
               </Nav.Link>
             </Nav>
           </Navbar.Collapse>
@@ -197,12 +195,16 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/itinerary_creation" element={<Itinerary_Creation_Page />} />
-          <Route path="/login" element={<Login />} />
+          {/* <Route path="/login" element={<Login />} /> */}
           <Route path="/signup" element={<SignUp />} />
+          {/* <Route path="/signup" element={<AuthForm />} /> */}
+
           <Route path="/contactUs" element={<ContactUs />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/addlandmark" element={<AddLandmark />} />
           <Route path="/final_itinerary" element={<Final_Itinerary />} />
+          {/* <Route path="/auth" element={<AuthForm />} /> */}
+          
         </Routes>
       </Container>
 
