@@ -13,7 +13,6 @@ import { dirname } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-
 dotenv.config();
 
 const app = express();
@@ -62,11 +61,19 @@ app.get('/api/nearby', async (req, res) => {
   }
 });
 
+// Serve static files from the Vite build output
 app.use(express.static(path.join(__dirname, '../dist')));
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../dist/index.html'));
+// Handle API routes (example)
+app.get('/api', (req, res) => {
+  res.json({ message: 'API is working' });
 });
+
+// Handle client-side routing (serve index.html for all non-API routes)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../dist', 'index.html'));
+});
+
 
 //Start the server
 app.listen(port, () => {
