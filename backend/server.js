@@ -1,14 +1,27 @@
-const express = require('express');
-const path = require('path');
-const axios = require('axios');
-const cors = require('cors');
+// const express = require('express');
+// const path = require('path');
+// const axios = require('axios');
+// const cors = require('cors');
+import dotenv from 'dotenv';
+import express from 'express';
+import path from 'path';
+import axios from 'axios';
+import cors from 'cors';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+
+dotenv.config();
 
 const app = express();
 
 // Use the Azure-provided port or default to 3001 locally
 const port = process.env.PORT || 3001;
 
-const GOOGLE_API_KEY = import.meta.env.GOOGLE_API_KEY;
+const GOOGLE_API_KEY = process.env.VITE_GOOGLE_API_KEY;
 if (!GOOGLE_API_KEY) {
   console.error('GOOGLE_API_KEY is not set in environment variables.');
   process.exit(1);
