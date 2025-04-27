@@ -8,7 +8,9 @@ box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
 body {
 background-color: #f8f9fa; 
 color: #343a40; 
-font-family: 'Arial', sans-serif; 
+font-family: 'Arial', sans-serif;
+overflow: hidden;
+
 }
 
 .navbar {
@@ -20,7 +22,6 @@ height: 60px;
 .nav-item {
     margin-left: 20px;
 }
-
 
 .nav-link:hover {
 /* color: #141414 !important;  */
