@@ -1,15 +1,7 @@
-/*
-* Author: Evan Kuczynski 3/18/25
-* This page is the react code for the contact us page
-* This page is mainly for contacting the users of MassTrip
-* */
-
 import {useState} from 'react';
-// import { Container, Form, Button, Alert } from 'react-bootstrap';
 import {Container, Row, Col, Form, Button, Alert} from 'react-bootstrap';
-// import icons
 import {FaFacebook, FaInstagram} from 'react-icons/fa';
-import '../styles/Contact_Us.css'; // Import the specific CSS file for ContactUs
+import '../styles/Contact_Us.css'; 
 
 
 function ContactUs() {
@@ -20,12 +12,13 @@ function ContactUs() {
         message: ''
     });
 
-    // these are the allerts that show when the inputs are incorrect or successful
+    // these are the alerts that show when the inputs are incorrect or successful
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
     const [alertVariant, setAlertVariant] = useState('success');
 
 
+    // update form data whenever user types in a field
     const handleChange = (e) => {
         const {name, value} = e.target;
         setFormData({
@@ -34,14 +27,12 @@ function ContactUs() {
         });
     };
 
-    // Handle form submission
+    // handle form submission and validation
     const handleSubmit = (e) => {
-        // prevents default html
+        // prevents default html form behavior
         e.preventDefault();
 
-
-        // if the name, email, or message are not filled out in the contact us fields
-        // then we are going to set a alert
+        // check if any fields are empty before submitting
         if (!formData.name || !formData.email || !formData.message) {
             setAlertMessage('Please fill out all fields.');
             setAlertVariant('danger');
@@ -49,12 +40,12 @@ function ContactUs() {
             return;
         }
 
-        // alerts if the message is successful
+        // if everything looks good, show success message
         setAlertMessage('Thank you for contacting us! We will get back to you soon.');
         setAlertVariant('success');
         setShowAlert(true);
 
-        // clear the fields for the forms
+        // reset form fields after successful submission
         setFormData({
             name: '',
             email: '',
@@ -63,60 +54,66 @@ function ContactUs() {
     };
 
     return (
-        // this is the classic container we include
+        // main container with some top margin
         <Container className="mt-5">
 
+            {/* show alert messages when form is submitted */}
             {showAlert && (
                 <Alert variant={alertVariant} onClose={() => setShowAlert(false)} dismissible>
                     {alertMessage}
                 </Alert>
             )}
-            {/**/}
+            
             <Row>
-                {/*socials and misc text*/}
+                {/* left column with contact info and faq link */}
                 <Col md={6} className="d-flex flex-column justify-content-lg-start align-items-start">
                     <h3>Get in Touch</h3>
                     <p></p>
-                    <p>Have questions, feedback, or suggestions? We’d love to hear from you!</p>
+                    <p>Have questions, feedback, or suggestions? We'd love to hear from you!</p>
                     <p>Let us know how we can improve your road trip experience.</p>
-                    <p>Please check out the FAQ link below before you add any questions. </p>
-                    <p></p>
-                    <a href="/faq" >Common FAQs</a>
-                    <p></p>
-
-
-                    <p>Follow us on social media for updates and more information.</p>
-                    <p></p>
-                    <div className="mb-3">
-                        <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" className="mx-2">
-                            <FaFacebook size={30}/>
-                        </a>
-                        <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" className="mx-2">
-                            <FaInstagram size={30}/>
-                        </a>
+                    
+                    {/* faq section with prominent button for easy access */}
+                    <div className="faq-link-container my-4 p-3 bg-light rounded">
+                        <h5 className="mb-2">Looking for answers?</h5>
+                        <p className="mb-2">check our frequently asked questions before submitting a query.</p>
+                        <Button 
+                            as="a" 
+                            href="/faq" 
+                            className="fw-bold text-white"
+                            style={{
+                                backgroundColor: '#009766', // match the navbar green color
+                                border: 'none',
+                                padding: '10px 20px',
+                                borderRadius: '5px',
+                                transition: 'background-color 0.2s ease'
+                            }}
+                            onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#00704d'} // darker on hover
+                            onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#009766'} // back to original
+                        >
+                            View Frequently Asked Questions
+                        </Button>
                     </div>
+                    
+                    <p>Follow us on social media for updates and more information.</p>
                 </Col>
 
-
-                {/* Right Column (Form) */}
+                {/* right column with contact form */}
                 <Col md={5}>
-                    {/*https://react-bootstrap.netlify.app/docs/forms/form-control/*/}
                     <Form onSubmit={handleSubmit} className="d-flex flex-column justify-content-end">
+                        {/* name input field */}
                         <Form.Group controlId="formName" className="mb-3">
-                            {/*<Form.Label>Name</Form.Label>*/}
                             <Form.Control
                                 type="text"
                                 placeholder="Enter your name"
                                 name="name"
                                 value={formData.name}
                                 onChange={handleChange}
-                                className="w-100"  // Ensures the input takes up the full width of the column
+                                className="w-100"  // makes input take full width
                             />
                         </Form.Group>
 
-                        {/* Form for email */}
+                        {/* email input field */}
                         <Form.Group controlId="formEmail" className="mb-3">
-                            {/*<Form.Label>Email address</Form.Label>*/}
                             <Form.Control
                                 type="email"
                                 placeholder="Enter your email"
@@ -127,8 +124,8 @@ function ContactUs() {
                             />
                         </Form.Group>
 
+                        {/* message textarea */}
                         <Form.Group controlId="formMessage" className="mb-3">
-                            {/*<Form.Label>Message</Form.Label>*/}
                             <Form.Control
                                 as="textarea"
                                 rows={3}
@@ -140,22 +137,33 @@ function ContactUs() {
                             />
                         </Form.Group>
 
+                        {/* submit button */}
                         <Button variant="primary" type="submit" className="w-100">Submit</Button>
                     </Form>
                 </Col>
             </Row>
 
-
-            {/*this footer shows the masstrip copyright and the name of the page*/}
+            {/* footer section with social links and copyright */}
             <footer className="mt-5 bg-white text-dark py-3">
                 <Row>
-                    {/* Left most column just for holding the space but nothing should be inside */}
-                    <Col xs={4} className="d-flex justify-content-start"></Col>
+                    {/* social media icons on the left */}
+                    <Col xs={4} className="d-flex justify-content-start align-items-center">
+                        <div>
+                            <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" className="me-2">
+                                <FaFacebook size={24}/>
+                            </a>
+                            <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" className="me-2">
+                                <FaInstagram size={24}/>
+                            </a>
+                        </div>
+                    </Col>
 
-                    {/* Middle Column just says the name of the current page (in this case "contact us") */}
-                    <Col xs={4} className="text-center"><h4>Contact Us</h4></Col>
+                    {/* contact us text in the middle */}
+                    <Col xs={4} className="text-center">
+                        <h4>Contact Us</h4>
+                    </Col>
 
-                    {/* Right Column (Copyright info) */}
+                    {/* copyright info on the right */}
                     <Col xs={4} className="d-flex justify-content-end">
                         <div>
                             <p>&copy; {new Date().getFullYear()} MassTrip</p>
@@ -166,6 +174,5 @@ function ContactUs() {
         </Container>
     );
 }
-
 
 export default ContactUs;
