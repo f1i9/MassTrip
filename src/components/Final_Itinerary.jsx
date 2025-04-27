@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Container, Form, Button } from 'react-bootstrap';
 import { useLocation } from 'react-router-dom';
 
@@ -11,7 +10,10 @@ function Final_Itinerary() {
 
     const containerStyle = {
         display: 'flex',
+        flexDirection: 'row',
         height: '100vh',
+        justifyContent: 'space-between',
+        padding: '10px',
       };
     
       const leftStyle = {
@@ -21,6 +23,7 @@ function Final_Itinerary() {
         flexDirection: 'column',
         justifyContent: 'space-between', // Space out content and button
         alignItems: 'center', // Center the button horizontally
+        overflow: 'hidden',
       };
     
       const rightStyle = {
@@ -38,9 +41,9 @@ function Final_Itinerary() {
       };
     
       const listStyle = {
+        maxHeight: 'calc(100vh - 220px)', // Calculate available space (allowing room for buttons and other content)
+        overflowY: 'auto', // Enable scrolling when content overflows
         marginBottom: '20px',
-        maxHeight: '600px', // Set a fixed height for the list container
-        overflowY: 'auto',  // Enable vertical scrolling when content overflows
         width: '100%', // Ensures it takes up full width of the container
       };
     
@@ -78,7 +81,7 @@ function Final_Itinerary() {
           onMouseEnter={(e) => (e.target.style.backgroundColor = buttonHoverStyle.backgroundColor)}
           onMouseLeave={(e) => (e.target.style.backgroundColor = buttonStyle.backgroundColor)}
         >
-          Left Button
+          Start
         </button>
       </div>
       <div style={rightStyle}>
@@ -107,7 +110,7 @@ function Final_Itinerary() {
           onMouseEnter={(e) => (e.target.style.backgroundColor = buttonHoverStyle.backgroundColor)}
           onMouseLeave={(e) => (e.target.style.backgroundColor = buttonStyle.backgroundColor)}
         >
-          Right Button
+          Download PDF
         </button>
       </div>
     </div>
