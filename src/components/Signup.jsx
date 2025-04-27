@@ -1,39 +1,66 @@
 import { useState } from 'react';
 import { Container, Form, Button, Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { signUp, signIn, logOut, signInWithGoogle } from "../utils/auth";
+import { useAuth } from "../context/AuthContext";
 
 function SignUp() {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    confirmPassword: ''
-  });
 
-  const navigate = useNavigate(); // Initialize useNavigate
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [error, setError] = useState("");
+  const { currentUser } = useAuth();
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const navigate = useNavigate();
 
-  const handleSignUp = (e) => {
+  const handleAuth = async (e) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
-      return;
+    setError("");
+    try {
+      if (isSignUp) {
+        await signUp(email, password);
+      } else {
+        await signIn(email, password);
+      }
+    } catch (err) {
+      setError(err.message);
     }
-    console.log("Signing up with", formData);
   };
 
-  const handleBackToLogin = () => {
-    navigate('/login'); // Navigate back to the login page
+  const handleLogOut = async () => {
+    setError("");
+    try {
+      await logOut();
+    } catch (err) {
+      setError(err.message);
+    }
   };
+
+  const handleGoogleSignIn = async () => {
+    setError("");
+    try {
+      await signInWithGoogle();
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  if (currentUser) {
+    return (
+      <div>
+      <div className="justify-content-center text-center">You are logged in as {currentUser.email}!</div>
+      <div className="justify-content-center text-center"><Button onClick={() => handleLogOut()}>Log Out</Button></div>
+      </div>
+    )
+  }
 
   return (
-    <Container className="d-flex justify-content-center align-items-center min-vh-100">
+    <Container className="d-flex justify-content-center align-items-center">
       <Card className="p-4 shadow-lg" style={{ width: '350px' }}>
         <Card.Body>
-          <h2 className="text-center mb-4">Sign Up</h2>
-          <Form onSubmit={handleSignUp}>
+          <h2 className="text-center mb-4">{isSignUp ? "Sign Up" : "Sign In"}</h2>
+          <Form onSubmit={handleAuth}>
             {/* Email Input */}
             <Form.Group className="mb-3">
               <Form.Label>Email address</Form.Label>
@@ -41,8 +68,8 @@ function SignUp() {
                 type="email"
                 name="email"
                 placeholder="Enter email"
-                value={formData.email}
-                onChange={handleChange}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </Form.Group>
@@ -54,34 +81,35 @@ function SignUp() {
                 type="password"
                 name="password"
                 placeholder="Enter password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
-            </Form.Group>
-
-            {/* Confirm Password Input */}
-            <Form.Group className="mb-3">
-              <Form.Label>Confirm Password</Form.Label>
-              <Form.Control
-                type="password"
-                name="confirmPassword"
-                placeholder="Confirm password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </Form.Group>
 
             {/* Buttons */}
             <div className="d-grid gap-2">
-              <Button variant="success" type="submit">
-                Sign Up
-              </Button>
-              <Button variant="dark" type="button" onClick={handleBackToLogin}>
-                Back to Login
+              <Button variant="success" type="submit" onClick={() => setIsSignUp(isSignUp)}>
+                {isSignUp ? "Sign Up" : "Sign In"}
               </Button>
             </div>
+
+            <div className='text-center mt-3'>
+              <p>
+              {isSignUp ? "Already have an account? " : "No account? "}
+              <Button variant='light' onClick={() => setIsSignUp(!isSignUp)}>
+                {isSignUp ? "Sign In" : "Sign Up"}
+              </Button>
+              </p>
+              {error && <p style={{ color: "red" }}>{error}</p>}
+            </div>
+
+            <div className='text-center mt-3'>
+              <Button variant="dark" onClick={handleGoogleSignIn}>
+                Login with Google
+              </Button>
+            </div>
+
           </Form>
         </Card.Body>
       </Card>
