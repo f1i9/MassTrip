@@ -46,6 +46,19 @@ app.get('/api/nearby', async (req, res) => {
   }
 });
 
+app.get('/api/autocomplete', async (req, res) => {
+  const input = req.query.input;
+  const googleMapsUrl = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${input}&key=${GOOGLE_API_KEY}&components=country:us|administrative_area:MA`;
+
+  try {
+    const response = await axios.get(googleMapsUrl);
+    res.json(response.data.predictions);
+  } catch (error) {
+    console.error('Error fetching data from Google Maps API:', error);
+    res.status(500).json({ error: 'Failed to get autocomplete results' });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Backend running on http://localhost:${port}`);
 });
