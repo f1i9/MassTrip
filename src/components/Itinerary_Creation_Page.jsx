@@ -3,6 +3,7 @@ import { Container, Row, Col, Form, Button, Card, InputGroup } from 'react-boots
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useSwipeable } from 'react-swipeable';
 
 function Itinerary_Creation_Page() {
   const [destination, setDestination] = useState('');
@@ -13,6 +14,7 @@ function Itinerary_Creation_Page() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const itemsPerPage = 10;
   const maxItems = 100;
   const navigate = useNavigate();
@@ -109,8 +111,6 @@ function Itinerary_Creation_Page() {
     }
   };
 
-
-
   const handleDragEnd = (result) => {
     if (!result.destination) return;
     const items = Array.from(attractionItems);
@@ -137,7 +137,6 @@ function Itinerary_Creation_Page() {
     currentPage * itemsPerPage
   );
 
-
   const handleClear = () => {
     setAttractionItems([]);
     setSearchQuery('');
@@ -146,6 +145,24 @@ function Itinerary_Creation_Page() {
     setError(null);
   };
   
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+  
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft: () => {
+      console.log('Swiped left'); 
+      setIsSidebarOpen(false);
+    },
+    onSwipedRight: () => {
+      console.log('Swiped right');
+      setIsSidebarOpen(true);
+    },
+    delta: 10, 
+    preventScrollOnSwipe: true,
+    trackTouch: true,
+    trackMouse: false,
+});
 
   return (
     <Container fluid className="mt-5">
@@ -272,45 +289,102 @@ function Itinerary_Creation_Page() {
           </div>
         </Col>
 
-        {/* Right column - current itinerary */}
-        <Col md={3}>
-          <div className="selected-items-container p-3 border rounded bg-light border-0 rounded-4">
-            <h6 className="text-center">Current Itinerary</h6>
-            {selectedItems.length === 0 ? (
-              <p className="text-muted text-center">Add attractions to your itinerary</p>
-            ) : (
-              <ul className="list-group">
-                {selectedItems.map((item, index) => (
-                  <li 
-                    key={`selected-${item.id}-${index}`} 
-                    className="list-group-item d-flex justify-content-between align-items-center border-0 mb-2"
-                    style={{ borderRadius: '14px' }}
-                  >
-                    <div className="d-flex align-items-center">
-                      <span>{item.name}</span>
-                    </div>
-                    <Button 
-                      variant="gray" 
-                      size="sm" 
-                      onClick={() => removeFromItinerary(item.id)}
-                    >
-                      ×
-                    </Button>
-                  </li>
-                ))}
-              </ul>
-            )}
-            <div className="mt-3 d-grid">
-              <Button id="roadtrip-btn" variant="primary" onClick={handleRoadTripClick}>Take a road trip!</Button>
-              {/* clear button for the itinary of locations selected by the user EK 4/16 */}
-              <div className="mt-2 d-grid">
-              <Button variant="outline-secondary" onClick={() => setSelectedItems([])}>
-                Clear Itinerary
-              </Button>
-            </div>
-            </div>
+   {/* Right column - current itinerary (desktop) */}
+   <Col md={3} className="d-none d-md-block">
+      <div className="selected-items-container p-3 border rounded bg-light border-0 rounded-4">
+        <h6 className="text-center">Current Itinerary</h6>
+        {selectedItems.length === 0 ? (
+          <p className="text-muted text-center">Add attractions to your itinerary</p>
+        ) : (
+          <ul className="list-group">
+            {selectedItems.map((item, index) => (
+              <li 
+                key={`selected-${item.id}-${index}`} 
+                className="list-group-item d-flex justify-content-between align-items-center border-0 mb-2"
+                style={{ borderRadius: '14px' }}
+              >
+                <div className="d-flex align-items-center">
+                  <span>{item.name}</span>
+                </div>
+                <Button 
+                  variant="gray" 
+                  size="sm" 
+                  on-powered-by-xaiClick={() => removeFromItinerary(item.id)}
+                >
+                  ×
+                </Button>
+              </li>
+            ))}
+          </ul>
+        )}
+        <div className="mt-3 d-grid">
+          <Button id="roadtrip-btn" variant="primary" onClick={handleRoadTripClick}>Take a road trip!</Button>
+          <div className="mt-2 d-grid">
+            <Button variant="outline-secondary" onClick={() => setSelectedItems([])}>
+              Clear Itinerary
+            </Button>
           </div>
-        </Col>
+        </div>
+      </div>
+    </Col>
+
+  {/* Mobile sidebar toggle button */}
+  <div
+  className="d-md-none position-fixed top-0 end-0 mt-3 me-3 rounded-circle text-white border-0 text-center"
+  style={{ zIndex: 1100, width: '40px', height: '40px', lineHeight: '40px', padding: 0, backgroundColor: 'transparent !important', cursor: 'pointer' }}
+  onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+>
+▶
+</div>
+
+{/* Mobile sidebar */}
+<div
+  className={`d-md-none position-fixed top-0 end-0 h-100 p-3 ${isSidebarOpen ? '' : 'translate-x-full'}`}
+  style={{ backgroundColor: "#009766", width: '80%', maxWidth: '300px', zIndex: 1000, transition: 'transform 0.3s ease-in-out', transform: isSidebarOpen ? 'translateX(0)' : 'translateX(100%)' }}
+>
+  <div className="selected-items-container" style={{paddingTop: '20px'}}>
+    <h6 className="text-center text-white">Current Itinerary</h6>
+    {selectedItems.length === 0 ? (
+      <p className="text-white text-center">Add attractions to your itinerary</p>
+    ) : (
+      <ul className="list-group">
+        {selectedItems.map((item, index) => (
+          <li 
+            key={`selected-${item.id}-${index}`} 
+            className="list-group-item d-flex justify-content-between align-items-center border-0 mb-2 bg-white"
+            style={{ borderRadius: '14px' }}
+          >
+            <div className="d-flex align-items-center">
+              <span>{item.name}</span>
+            </div>
+            <Button 
+              variant="gray" 
+              size="sm" 
+              onClick={() => removeFromItinerary(item.id)}
+            >
+              ×
+            </Button>
+          </li>
+        ))}
+      </ul>
+    )}
+        <div className="mt-3 d-grid">
+          <Button id="roadtrip-btn" variant="primary" onClick={handleRoadTripClick}>Take a road trip!</Button>
+          <div className="mt-2 d-grid">
+            <Button variant="outline-light" onClick={() => setSelectedItems([])}>
+              Clear Itinerary
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* Overlay for mobile when sidebar is open */}
+    <div
+      className={`d-md-none position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 ${isSidebarOpen ? 'd-block' : 'd-none'}`}
+      style={{ zIndex: 999 }}
+      onClick={() => setIsSidebarOpen(false)}
+    ></div>
       </Row>
     </Container>
   );

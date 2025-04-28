@@ -17,3 +17,7 @@
     left: 0;
     overflow: hidden;
 }
+
+body {
+    overflow: hidden;
+}
