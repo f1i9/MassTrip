@@ -1,41 +1,61 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
-name: Build and deploy Node.js app to Azure Web App - masstrip-web
+name: Build and Deploy MASSTRIP Web App to Azure
 
 on:
   push:
     branches:
-      - azure
+      - azure  
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Set up Node.js version
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18.x'
+          node-version: '18'
 
-      - name: npm install, build, and test
+      # Install frontend dependencies (root package.json)
+      - name: Install frontend dependencies
+        run: npm install
+
+      # Build frontend (outputs dist/)
+      - name: Build Vite frontend
+        run: npm run build
+
+      # Install backend dependencies (backend/package.json)
+      - name: Install backend dependencies
         run: |
+          cd backend
           npm install
-          npm run build --if-present
-          npm run test --if-present
+          cd ..
 
+      # Prepare deployable folder
+      - name: Prepare deployment folder
+        run: |
+          mkdir deploy
+          cp -r backend/* deploy/
+          cp -r dist deploy/
+          echo "Deploy folder ready"
+
+      # Zip for deployment
       - name: Zip artifact for deployment
-        run: zip release.zip ./* -r
+        run: |
+          cd deploy
+          zip -r ../release.zip .
+          cd ..
 
-      - name: Upload artifact for deployment job
+      # Upload artifact to next job
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: node-app
+          name: app
           path: release.zip
 
   deploy:
@@ -43,22 +63,21 @@ jobs:
     needs: build
     environment:
       name: 'Production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    
+
     steps:
-      - name: Download artifact from build job
+      - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: node-app
+          name: app
 
-      - name: Unzip artifact for deployment
+      - name: Unzip artifact
         run: unzip release.zip
-      
-      - name: 'Deploy to Azure Web App'
-        id: deploy-to-webapp
+
+      - name: Deploy to Azure
+        id: deploy-to-azure
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'masstrip-web'
           slot-name: 'Production'
           package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_FAC22C35D3CF4E9CAA8AA4785AB8641D }}
+          publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
