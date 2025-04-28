@@ -1,22 +1,40 @@
-const express = require('express');
-const axios = require('axios');
-const app = express();
-const port = 3001;
-const cors = require('cors');
+// const express = require('express');
+// const path = require('path');
+// const axios = require('axios');
+// const cors = require('cors');
+import dotenv from 'dotenv';
+import express from 'express';
+import path from 'path';
+import axios from 'axios';
+import cors from 'cors';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+
+dotenv.config();
+
+const app = express();
+
+// Use the Azure-provided port or default to 3001 locally
+const port = process.env.PORT || 3001;
+
+const GOOGLE_API_KEY = process.env.VITE_GOOGLE_API_KEY;
+if (!GOOGLE_API_KEY) {
+  console.error('GOOGLE_API_KEY is not set in environment variables.');
+  process.exit(1);
+}
 
 app.use(cors());
-
 app.use(express.json());
 
-const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
 
 app.get('/api/location', async (req, res) => {
   try {
-    // getting user's location based on their IP address
     const ipResponse = await axios.get('http://ip-api.com/json');
     const { lat, lon } = ipResponse.data;
-    // console.log(ipResponse.data);
     res.json({ latitude: lat, longitude: lon });
   } catch (error) {
     console.error(error);
@@ -30,8 +48,6 @@ app.get('/api/nearby', async (req, res) => {
   try {
     const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${radius}&type=${type}&key=${GOOGLE_API_KEY}`;
     const response = await axios.get(url);
-
-    console.log(response.data)
 
     const places = response.data.results.map(place => ({
       name: place.name,
@@ -59,6 +75,13 @@ app.get('/api/autocomplete', async (req, res) => {
   }
 });
 
+app.use(express.static(path.join(__dirname, '../dist')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../dist/index.html'));
+});
+
+//Start the server
 app.listen(port, () => {
-  console.log(`Backend running on http://localhost:${port}`);
+  console.log(`Server is running on port ${port}`);
 });
