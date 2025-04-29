@@ -4,8 +4,7 @@
 * This page is mainly for contacting the users of MassTrip
 * */
 
-import {useState} from 'react';
-// import { Container, Form, Button, Alert } from 'react-bootstrap';
+import {useState, useEffect} from 'react';
 import {Container, Row, Col, Form, Button, Alert} from 'react-bootstrap';
 // import icons
 import {FaFacebook, FaInstagram} from 'react-icons/fa';
@@ -20,17 +19,92 @@ function ContactUs() {
         message: ''
     });
 
-    // these are the allerts that show when the inputs are incorrect or successful
-    const [showAlert, setShowAlert] = useState(false);
-    const [alertMessage, setAlertMessage] = useState('');
-    const [alertVariant, setAlertVariant] = useState('success');
+    // State for form validation errors
+    const [formErrors, setFormErrors] = useState({
+        name: '',
+        email: '',
+        message: ''
+    });
 
+    // Track if fields have been touched
+    const [touched, setTouched] = useState({
+        name: false,
+        email: false,
+        message: false
+    });
+
+    // State for form submission success
+    const [formSubmitted, setFormSubmitted] = useState(false);
+
+    // Validate form fields whenever they change
+    useEffect(() => {
+        if (touched.name) {
+            validateField('name', formData.name);
+        }
+        
+        if (touched.email) {
+            validateField('email', formData.email);
+        }
+        
+        if (touched.message) {
+            validateField('message', formData.message);
+        }
+    }, [formData, touched]);
+
+    // Validate individual field
+    const validateField = (field, value) => {
+        let error = '';
+        
+        switch(field) {
+            case 'name':
+                if (!value.trim()) {
+                    error = 'Name is required';
+                }
+                break;
+                
+            case 'email':
+                if (!value.trim()) {
+                    error = 'Email is required';
+                } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+                    error = 'Please enter a valid email address';
+                }
+                break;
+                
+            case 'message':
+                if (!value.trim()) {
+                    error = 'Message is required';
+                } else if (value.trim().length < 10) {
+                    error = 'Message should be at least 10 characters';
+                }
+                break;
+                
+            default:
+                break;
+        }
+        
+        setFormErrors(prev => ({
+            ...prev,
+            [field]: error
+        }));
+        
+        return !error;
+    };
 
     const handleChange = (e) => {
         const {name, value} = e.target;
+        
         setFormData({
             ...formData,
             [name]: value
+        });
+    };
+    
+    const handleBlur = (e) => {
+        const { name } = e.target;
+        
+        setTouched({
+            ...touched,
+            [name]: true
         });
     };
 
@@ -38,52 +112,58 @@ function ContactUs() {
     const handleSubmit = (e) => {
         // prevents default html
         e.preventDefault();
-
-
-        // if the name, email, or message are not filled out in the contact us fields
-        // then we are going to set a alert
-        if (!formData.name || !formData.email || !formData.message) {
-            setAlertMessage('Please fill out all fields.');
-            setAlertVariant('danger');
-            setShowAlert(true);
-            return;
-        }
-
-        // alerts if the message is successful
-        setAlertMessage('Thank you for contacting us! We will get back to you soon.');
-        setAlertVariant('success');
-        setShowAlert(true);
-
-        // clear the fields for the forms
-        setFormData({
-            name: '',
-            email: '',
-            message: ''
+        
+        // Mark all fields as touched
+        setTouched({
+            name: true,
+            email: true,
+            message: true
         });
+        
+        // Validate all fields
+        const nameValid = validateField('name', formData.name);
+        const emailValid = validateField('email', formData.email);
+        const messageValid = validateField('message', formData.message);
+        
+        // If all fields are valid, submit the form
+        if (nameValid && emailValid && messageValid) {
+            // Show success message
+            setFormSubmitted(true);
+            
+            // Reset form and touched state
+            setFormData({
+                name: '',
+                email: '',
+                message: ''
+            });
+            
+            setTouched({
+                name: false,
+                email: false,
+                message: false
+            });
+            
+            // Hide success message after 5 seconds
+            setTimeout(() => {
+                setFormSubmitted(false);
+            }, 5000);
+        }
     };
 
     return (
         // this is the classic container we include
         <Container className="mt-5">
-
-            {showAlert && (
-                <Alert variant={alertVariant} onClose={() => setShowAlert(false)} dismissible>
-                    {alertMessage}
-                </Alert>
-            )}
-            {/**/}
             <Row>
                 {/*socials and misc text*/}
                 <Col md={6} className="d-flex flex-column justify-content-lg-start align-items-start">
                     <h3>Get in Touch</h3>
                     <p></p>
-                    <p>Have questions, feedback, or suggestions? We’d love to hear from you!</p>
+                    <p>Have questions, feedback, or suggestions? We'd love to hear from you!</p>
                     <p>Let us know how we can improve your road trip experience.</p>
                     <p>Please check out the FAQ link below before you add any questions. </p>
                     <p></p>
-                    <a href="/faq" >Common FAQs</a>
+                    <a href="/faq">Common FAQs</a>
                     <p></p>
-
 
                     <p>Follow us on social media for updates and more information.</p>
                     <p></p>
@@ -97,38 +177,48 @@ function ContactUs() {
                     </div>
                 </Col>
 
-
                 {/* Right Column (Form) */}
                 <Col md={5}>
-                    {/*https://react-bootstrap.netlify.app/docs/forms/form-control/*/}
-                    <Form onSubmit={handleSubmit} className="d-flex flex-column justify-content-end">
-                        <Form.Group controlId="formName" className="mb-3">
-                            {/*<Form.Label>Name</Form.Label>*/}
+                    {formSubmitted && (
+                        <Alert variant="success" className="mb-3">
+                            Thank you for contacting us! We will get back to you soon.
+                        </Alert>
+                    )}
+                    
+                    <Form noValidate onSubmit={handleSubmit} className="d-flex flex-column justify-content-end">
+                        <Form.Group className="mb-3 position-relative">
                             <Form.Control
                                 type="text"
                                 placeholder="Enter your name"
                                 name="name"
                                 value={formData.name}
                                 onChange={handleChange}
-                                className="w-100"  // Ensures the input takes up the full width of the column
+                                onBlur={handleBlur}
+                                isInvalid={touched.name && !!formErrors.name}
+                                className="w-100"
                             />
+                            <div className="error-message">
+                                {touched.name && formErrors.name}
+                            </div>
                         </Form.Group>
 
-                        {/* Form for email */}
-                        <Form.Group controlId="formEmail" className="mb-3">
-                            {/*<Form.Label>Email address</Form.Label>*/}
+                        <Form.Group className="mb-3 position-relative">
                             <Form.Control
                                 type="email"
                                 placeholder="Enter your email"
                                 name="email"
                                 value={formData.email}
                                 onChange={handleChange}
+                                onBlur={handleBlur}
+                                isInvalid={touched.email && !!formErrors.email}
                                 className="w-100 custom-background"
                             />
+                            <div className="error-message">
+                                {touched.email && formErrors.email}
+                            </div>
                         </Form.Group>
 
-                        <Form.Group controlId="formMessage" className="mb-3">
-                            {/*<Form.Label>Message</Form.Label>*/}
+                        <Form.Group className="mb-3 position-relative">
                             <Form.Control
                                 as="textarea"
                                 rows={3}
@@ -136,15 +226,19 @@ function ContactUs() {
                                 name="message"
                                 value={formData.message}
                                 onChange={handleChange}
+                                onBlur={handleBlur}
+                                isInvalid={touched.message && !!formErrors.message}
                                 className="w-100"
                             />
+                            <div className="error-message">
+                                {touched.message && formErrors.message}
+                            </div>
                         </Form.Group>
 
                         <Button variant="primary" type="submit" className="w-100">Submit</Button>
                     </Form>
                 </Col>
             </Row>
-
 
             {/*this footer shows the masstrip copyright and the name of the page*/}
             <footer className="mt-5 bg-white text-dark py-3">
@@ -166,6 +260,5 @@ function ContactUs() {
         </Container>
     );
 }
-
 
 export default ContactUs;

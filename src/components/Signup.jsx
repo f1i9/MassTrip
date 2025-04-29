@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Container, Form, Button, Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { signUp, signIn, logOut, signInWithGoogle } from "../utils/auth";
@@ -10,11 +10,101 @@ function SignUp() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [error, setError] = useState("");
   const { currentUser } = useAuth();
+  
+  // Form validation states
+  const [formErrors, setFormErrors] = useState({
+    email: '',
+    password: ''
+  });
+  
+  // Track if fields have been touched
+  const [touched, setTouched] = useState({
+    email: false,
+    password: false
+  });
 
   const navigate = useNavigate();
 
+  // Validate form fields whenever they change
+  useEffect(() => {
+    if (touched.email) {
+      validateField('email', email);
+    }
+    
+    if (touched.password) {
+      validateField('password', password);
+    }
+  }, [email, password, touched, isSignUp]);
+
+  // Validate individual field
+  const validateField = (field, value) => {
+    let error = '';
+    
+    switch(field) {
+      case 'email':
+        if (!value.trim()) {
+          error = 'Email is required';
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+          error = 'Please enter a valid email address';
+        }
+        break;
+        
+      case 'password':
+        if (!value.trim()) {
+          error = 'Password is required';
+        } else if (isSignUp && value.length < 6) {
+          error = 'Password must be at least 6 characters';
+        }
+        break;
+        
+      default:
+        break;
+    }
+    
+    setFormErrors(prev => ({
+      ...prev,
+      [field]: error
+    }));
+    
+    return !error;
+  };
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+    setError(""); // Clear any Firebase errors when user types
+  };
+  
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+    setError(""); // Clear any Firebase errors when user types
+  };
+  
+  const handleBlur = (e) => {
+    const { name } = e.target;
+    
+    setTouched({
+      ...touched,
+      [name]: true
+    });
+  };
+
   const handleAuth = async (e) => {
     e.preventDefault();
+    
+    // Mark all fields as touched
+    setTouched({
+      email: true,
+      password: true
+    });
+    
+    // Validate all fields
+    const emailValid = validateField('email', email);
+    const passwordValid = validateField('password', password);
+    
+    if (!emailValid || !passwordValid) {
+      return; // Don't proceed if validation fails
+    }
+    
     setError("");
     try {
       if (isSignUp) {
@@ -62,36 +152,44 @@ function SignUp() {
           <Card className="p-4 shadow-lg">
             <Card.Body>
               <h2 className="text-center mb-4">{isSignUp ? "Sign Up" : "Sign In"}</h2>
-              <Form onSubmit={handleAuth}>
+              <Form noValidate onSubmit={handleAuth}>
                 {/* Email Input */}
-                <Form.Group className="mb-3">
+                <Form.Group className="mb-3 position-relative">
                   <Form.Label>Email address</Form.Label>
                   <Form.Control
                     type="email"
                     name="email"
                     placeholder="Enter email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
+                    onChange={handleEmailChange}
+                    onBlur={handleBlur}
+                    isInvalid={touched.email && !!formErrors.email}
                   />
+                  <div className="error-message">
+                    {touched.email && formErrors.email}
+                  </div>
                 </Form.Group>
 
                 {/* Password Input */}
-                <Form.Group className="mb-3">
+                <Form.Group className="mb-3 position-relative">
                   <Form.Label>Password</Form.Label>
                   <Form.Control
                     type="password"
                     name="password"
                     placeholder="Enter password"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
+                    onChange={handlePasswordChange}
+                    onBlur={handleBlur}
+                    isInvalid={touched.password && !!formErrors.password}
                   />
+                  <div className="error-message">
+                    {touched.password && formErrors.password}
+                  </div>
                 </Form.Group>
 
                 {/* Buttons */}
                 <div className="d-grid gap-2">
-                  <Button variant="success" type="submit" onClick={() => setIsSignUp(isSignUp)}>
+                  <Button variant="success" type="submit">
                     {isSignUp ? "Sign Up" : "Sign In"}
                   </Button>
                 </div>
@@ -99,7 +197,15 @@ function SignUp() {
                 <div className='text-center mt-3'>
                   <p>
                     {isSignUp ? "Already have an account? " : "No account? "}
-                    <Button variant='light' onClick={() => setIsSignUp(!isSignUp)}>
+                    <Button 
+                      variant='light' 
+                      onClick={() => {
+                        setIsSignUp(!isSignUp);
+                        setFormErrors({ email: '', password: '' });
+                        setTouched({ email: false, password: false });
+                        setError("");
+                      }}
+                    >
                       {isSignUp ? "Sign In" : "Sign Up"}
                     </Button>
                   </p>
@@ -119,38 +225,46 @@ function SignUp() {
         {/* Mobile version (no card) */}
         <div className="d-block d-md-none">
           <h2 className="text-center mt-4 mb-4">{isSignUp ? "Sign Up" : "Sign In"}</h2>
-          <Form onSubmit={handleAuth}>
+          <Form noValidate onSubmit={handleAuth}>
             {/* Email Input */}
-            <Form.Group className="mb-3">
+            <Form.Group className="mb-3 position-relative">
               <Form.Label>Email address</Form.Label>
               <Form.Control
                 type="email"
                 name="email"
                 placeholder="Enter email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
+                onChange={handleEmailChange}
+                onBlur={handleBlur}
+                isInvalid={touched.email && !!formErrors.email}
                 style={{ backgroundColor: '#f7f7f7', boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)' }}
               />
+              <div className="error-message">
+                {touched.email && formErrors.email}
+              </div>
             </Form.Group>
 
             {/* Password Input */}
-            <Form.Group className="mb-3">
+            <Form.Group className="mb-3 position-relative">
               <Form.Label>Password</Form.Label>
               <Form.Control
                 type="password"
                 name="password"
                 placeholder="Enter password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
+                onChange={handlePasswordChange}
+                onBlur={handleBlur}
+                isInvalid={touched.password && !!formErrors.password}
                 style={{ backgroundColor: '#f7f7f7', boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)' }}
               />
+              <div className="error-message">
+                {touched.password && formErrors.password}
+              </div>
             </Form.Group>
 
             {/* Buttons */}
             <div className="d-grid gap-2">
-              <Button variant="success" type="submit" onClick={() => setIsSignUp(isSignUp)}>
+              <Button variant="success" type="submit">
                 {isSignUp ? "Sign Up" : "Sign In"}
               </Button>
             </div>
@@ -158,7 +272,15 @@ function SignUp() {
             <div className='text-center mt-3'>
               <p>
                 {isSignUp ? "Already have an account? " : "No account? "}
-                <Button variant='light' onClick={() => setIsSignUp(!isSignUp)}>
+                <Button 
+                  variant='light' 
+                  onClick={() => {
+                    setIsSignUp(!isSignUp);
+                    setFormErrors({ email: '', password: '' });
+                    setTouched({ email: false, password: false });
+                    setError("");
+                  }}
+                >
                   {isSignUp ? "Sign In" : "Sign Up"}
                 </Button>
               </p>
