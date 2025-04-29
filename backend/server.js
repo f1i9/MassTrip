@@ -1,7 +1,3 @@
-// const express = require('express');
-// const path = require('path');
-// const axios = require('axios');
-// const cors = require('cors');
 import dotenv from 'dotenv';
 import express from 'express';
 import path from 'path';
@@ -10,25 +6,30 @@ import cors from 'cors';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
+// Needed for ES Modules (__dirname simulation)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+// Load environment variables from .env
 dotenv.config();
 
 const app = express();
 
-// Use the Azure-provided port or default to 3001 locally
+// Use Azure provided PORT, or default to 3001 locally
 const port = process.env.PORT || 3001;
 
+// Load the Google API Key
 const GOOGLE_API_KEY = process.env.VITE_GOOGLE_API_KEY;
 if (!GOOGLE_API_KEY) {
   console.error('GOOGLE_API_KEY is not set in environment variables.');
   process.exit(1);
 }
 
+// Middleware
 app.use(cors());
 app.use(express.json());
 
+// === API Routes ===
 
 app.get('/api/location', async (req, res) => {
   try {
@@ -61,21 +62,18 @@ app.get('/api/nearby', async (req, res) => {
   }
 });
 
-// Serve static files from the Vite build output
-app.use(express.static(path.join(__dirname, '../dist')));
+// === Serve Static Frontend Files ===
 
-// Handle API routes (example)
-app.get('/api', (req, res) => {
-  res.json({ message: 'API is working' });
-});
+// Serve static files from the Vite build output (dist folder)
+app.use(express.static(path.join(__dirname, 'dist')));
 
-// Handle client-side routing (serve index.html for all non-API routes)
+// Fallback route: serve index.html for all non-API requests
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../dist', 'index.html'));
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
+// === Start the Server ===
 
-//Start the server
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
