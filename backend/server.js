@@ -64,7 +64,9 @@ app.get('/api/nearby', async (req, res) => {
 
 app.get('/api/autocomplete', async (req, res) => {
   const input = req.query.input;
-  const googleMapsUrl = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${input}&key=${GOOGLE_API_KEY}&components=country:us|administrative_area:MA`;
+  console.log("Received input:", input);
+  const googleMapsUrl = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${input}&key=${GOOGLE_API_KEY}`;
+  console.log("Requesting URL:", googleMapsUrl);
 
   try {
     const response = await axios.get(googleMapsUrl);

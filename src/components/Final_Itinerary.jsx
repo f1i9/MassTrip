@@ -103,7 +103,6 @@ function Final_Itinerary() {
     <div style={containerStyle}>
       <div style={leftStyle}>
         <div style={contentStyle}>
-          <h2>Google Maps</h2>
           <LoadScript googleMapsApiKey={GOOGLE_MAPS_API_KEY}>
             <GoogleMap
               mapContainerStyle={mapContainerStyle}

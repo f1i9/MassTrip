@@ -190,7 +190,7 @@ function App() {
       </Navbar>
 
       {/* main content area */}
-      <Container className="mt-5" style={{ minHeight: '100vh' }}>
+      <Container className="mt-5">
         {/* define routes for each page */}
         <Routes>
           <Route path="/" element={<Home />} />

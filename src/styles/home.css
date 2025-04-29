@@ -3,6 +3,7 @@
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    background-attachment: fixed;
     min-height: 100vh;
     max-width: 100% !important;
     margin-top: 0 !important;
@@ -12,12 +13,11 @@
     width: 100vw; 
     margin: 0 !important;
     padding: 0;
-    position: absolute;
     top: 0;
     left: 0;
     overflow: hidden;
 }
 
 body {
-    overflow: hidden;
+    /* overflow: hidden; */
 }
