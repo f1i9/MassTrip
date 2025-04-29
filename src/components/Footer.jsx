@@ -5,8 +5,8 @@ const Footer = () => {
   const currentYear = new Date().getFullYear(); // Get the current year
 
   return (
-    <footer className="footer" style={{marginLeft:'30px' }}>
-      <p>© {currentYear} MassTrip</p>
+    <footer className="footer" style={{marginLeft:'30px', padding:0 }}>
+      <p>&copy; {currentYear} MassTrip</p>
     </footer>
   );
 };

@@ -138,6 +138,51 @@ function Home() {
         Explore landmarks, get routes, and discover new places to visit.
       </h4>
 
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: '10px 20px',
+          boxSizing: 'border-box',
+        }}
+      >
+        {/* Left-aligned copyright */}
+        <div style={{ width: '33%', textAlign: 'left' }}>
+          <p className="text-white" style={{ margin: 0 }}>
+            &copy; {new Date().getFullYear()} MassTrip
+          </p>
+        </div>
+
+        {/* Centered photo credit */}
+        <div style={{ width: '33%', textAlign: 'center' }}>
+          <p className="text-white" style={{ margin: 0 }}>
+            Photo by{' '}
+            <a
+              href="https://unsplash.com/@geraninmo?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Geranimo
+            </a>{' '}
+            on{' '}
+            <a
+              href="https://unsplash.com/photos/aerial-shot-of-road-surrounded-by-green-trees-qzgN45hseN0?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Unsplash
+            </a>
+          </p>
+        </div>
+
+        {/* Empty right side to maintain center alignment */}
+        <div style={{ width: '33%' }}></div>
+      </div>
+      
       <div className="d-flex justify-content-center" style={{ position: 'relative', marginTop: '50px' }}>
         {(inputError || locationError) && (
           <div
@@ -185,27 +230,6 @@ function Home() {
           </ul>
         </div>
       )}
-
-      <div style={{ position: 'absolute', bottom: 0, width: '100%', textAlign: 'center' }}>
-        <p className="justify-content-center text-center text-white" style={{ marginTop: '20px' }}>
-          Photo by{' '}
-          <a
-            href="https://unsplash.com/@geraninmo?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Geranimo
-          </a>{' '}
-          on{' '}
-          <a
-            href="https://unsplash.com/photos/aerial-shot-of-road-surrounded-by-green-trees-qzgN45hseN0?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Unsplash
-          </a>
-        </p>
-      </div>
     </Container>
   );
 }

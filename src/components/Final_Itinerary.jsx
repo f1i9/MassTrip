@@ -1,42 +1,39 @@
-import { useState } from 'react';
-import { Container, Form, Button } from 'react-bootstrap';
+import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+import { GoogleMap, LoadScript, Marker, DirectionsRenderer } from '@react-google-maps/api';
+import { jsPDF } from 'jspdf';
+import { useJsApiLoader } from '@react-google-maps/api';
 
 function Final_Itinerary() {
-  const firebaseConfig = {
-    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-    appId: import.meta.env.VITE_FIREBASE_APP_ID,
-    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
-  };
+  const [mapLoaded, setMapLoaded] = useState(false);
+  const [directionsResponse, setDirectionsResponse] = useState(null);
+  const [totalTime, setTotalTime] = useState(null);
+  const [selectedItems, setSelectedItems] = useState([]);
 
   const location = useLocation();
-  const selectedItems = location.state?.selectedItems || [];
+  const initialItems = location.state?.selectedItems || [];
 
   const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
 
-  console.log("Google Maps API Key:", GOOGLE_MAPS_API_KEY);
-
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: GOOGLE_MAPS_API_KEY,
+  });
+  
   const mapContainerStyle = {
     width: '100%',
-    height: '600px', 
+    height: '80vh',
     borderRadius: '20px'
   };
 
-
   const defaultCenter = {
-    lat: 37.7749,
-    lng: -122.4194,
+    lat: 42.3601,
+    lng: -71.0589,
   };
 
-  const center = selectedItems.length > 0 && selectedItems[0].geometry?.location
+  const center = selectedItems.length > 0 && selectedItems[0].location
     ? {
-        lat: selectedItems[0].geometry.location.lat,
-        lng: selectedItems[0].geometry.location.lng,
+        lat: selectedItems[0].location.lat,
+        lng: selectedItems[0].location.lng,
       }
     : defaultCenter;
 
@@ -66,7 +63,7 @@ function Final_Itinerary() {
 
   const contentStyle = {
     marginBottom: '20px',
-    width: '100%', 
+    width: '100%',
   };
 
   const listStyle = {
@@ -99,39 +96,155 @@ function Final_Itinerary() {
     backgroundColor: '#45a049',
   };
 
+  // Fetch address for lat/lng
+  const fetchAddressFromLatLng = async (lat, lng) => {
+    try {
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_MAPS_API_KEY}`
+      );
+      const data = await response.json();
+      if (data.status === 'OK' && data.results.length > 0) {
+        return data.results[0].formatted_address;
+      }
+    } catch (error) {
+      console.error('Geocoding error:', error);
+    }
+    return 'Address not found';
+  };
+
+  // Populate addresses
+  useEffect(() => {
+    const enhanceWithAddresses = async () => {
+      const itemsWithAddress = await Promise.all(
+        initialItems.map(async (item) => {
+          if (item.location) {
+            const address = await fetchAddressFromLatLng(item.location.lat, item.location.lng);
+            return { ...item, address };
+          }
+          return item;
+        })
+      );
+      setSelectedItems(itemsWithAddress);
+    };
+
+    enhanceWithAddresses();
+  }, []);
+
+  // Get directions once map is ready and items loaded
+  useEffect(() => {
+    if (!mapLoaded || selectedItems.length < 2) return;
+
+    const directionsService = new window.google.maps.DirectionsService();
+
+    const origin = selectedItems[0].location;
+    const destination = selectedItems[selectedItems.length - 1].location;
+    const waypoints = selectedItems.slice(1, -1).map(item => ({
+      location: item.location,
+      stopover: true
+    }));
+
+    directionsService.route(
+      {
+        origin,
+        destination,
+        waypoints,
+        travelMode: 'DRIVING'
+      },
+      (result, status) => {
+        if (status === 'OK') {
+          setDirectionsResponse(result);
+          const totalSeconds = result.routes[0].legs.reduce(
+            (sum, leg) => sum + leg.duration.value,
+            0
+          );
+
+          const hours = Math.floor(totalSeconds / 3600);
+          const minutes = Math.floor((totalSeconds % 3600) / 60);
+
+          setTotalTime(`${hours}h ${minutes}m`);
+        } else {
+          console.error('Directions request failed due to ' + status);
+        }
+      }
+    );
+  }, [selectedItems, mapLoaded]);
+
+  // Generate link to Google Maps
+  const buildGoogleMapsLink = () => {
+    if (selectedItems.length < 2) return '#';
+  
+    const origin = `${selectedItems[0].location.lat},${selectedItems[0].location.lng}`;
+    const destination = `${selectedItems[selectedItems.length - 1].location.lat},${selectedItems[selectedItems.length - 1].location.lng}`;
+    const waypoints = selectedItems
+      .slice(1, -1)
+      .map(item => `${item.location.lat},${item.location.lng}`)
+      .join('|');
+  
+    return `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&waypoints=${waypoints}&travelmode=driving`;
+  };  
+
+  // Generate PDF
+  const generatePDF = () => {
+    const doc = new jsPDF();
+    doc.setFontSize(18);
+    doc.text('Your Road Trip Itinerary', 20, 20);
+
+    let yPosition = 30;
+    selectedItems.forEach((item, index) => {
+      doc.setFontSize(12);
+      doc.text(`${index + 1}. ${item.name}`, 20, yPosition);
+      doc.text(`Address: ${item.address || 'Loading...'}`, 20, yPosition + 10);
+      yPosition += 20;
+    });
+
+    doc.setFontSize(14);
+    doc.text(`Total Time: ${totalTime || 'Calculating...'}`, 20, yPosition);
+    doc.save('itinerary.pdf');
+  };
+
   return (
     <div style={containerStyle}>
       <div style={leftStyle}>
         <div style={contentStyle}>
-          <LoadScript googleMapsApiKey={GOOGLE_MAPS_API_KEY}>
+        {isLoaded && (
             <GoogleMap
               mapContainerStyle={mapContainerStyle}
               center={center}
-              zoom={12} // Adjust zoom level as needed
+              zoom={12}
+              onLoad={() => setMapLoaded(true)}
             >
-              {/* Add markers for each selected item */}
               {selectedItems.map((item, index) =>
-                item.geometry?.location ? (
+                item.location ? (
                   <Marker
                     key={index}
                     position={{
-                      lat: item.geometry.location.lat,
-                      lng: item.geometry.location.lng,
+                      lat: item.location.lat,
+                      lng: item.location.lng,
                     }}
                     title={item.name}
                   />
                 ) : null
               )}
+              {directionsResponse && (
+                <DirectionsRenderer
+                  options={{
+                    directions: directionsResponse,
+                    preserveViewport: true,
+                  }}
+                />
+              )}
             </GoogleMap>
-          </LoadScript>
+          )}
         </div>
-        <button
-          style={buttonStyle}
-          onMouseEnter={(e) => (e.target.style.backgroundColor = buttonHoverStyle.backgroundColor)}
-          onMouseLeave={(e) => (e.target.style.backgroundColor = buttonStyle.backgroundColor)}
-        >
-          Left Button
-        </button>
+        <a href={buildGoogleMapsLink()} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+          <button
+            style={buttonStyle}
+            onMouseEnter={(e) => (e.target.style.backgroundColor = buttonHoverStyle.backgroundColor)}
+            onMouseLeave={(e) => (e.target.style.backgroundColor = buttonStyle.backgroundColor)}
+          >
+            Start Trip in Google Maps
+          </button>
+        </a>
       </div>
       <div style={rightStyle}>
         <div style={listStyle}>
@@ -142,24 +255,27 @@ function Final_Itinerary() {
                 <li key={index}>
                   <div style={cardStyle}>
                     <h6>{item.name}</h6>
-                    <p>{item.vicinity}</p>
+                    <p>{item.address || 'Loading address...'}</p>
                   </div>
                 </li>
               ))
             ) : (
-              <p>No items in your itinerary.</p>
+              <p style={{ textAlign: 'center' }}>No items in your itinerary</p>
             )}
           </ul>
         </div>
-        <div style={cardStyle}>
-          <h6 style={{ textAlign: 'center' }}>Total Time:</h6>
+        <div style={{ ...cardStyle, marginTop: 'auto' }}>
+          <h6 style={{ textAlign: 'center' }}>
+            Total Time: {totalTime ? totalTime : 'Calculating...'}
+          </h6>
         </div>
         <button
           style={buttonStyle}
+          onClick={generatePDF}
           onMouseEnter={(e) => (e.target.style.backgroundColor = buttonHoverStyle.backgroundColor)}
           onMouseLeave={(e) => (e.target.style.backgroundColor = buttonStyle.backgroundColor)}
         >
-          Right Button
+          Download to PDF
         </button>
       </div>
     </div>
