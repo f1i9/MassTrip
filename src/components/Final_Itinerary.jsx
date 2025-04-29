@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Container, Form, Button } from 'react-bootstrap';
 import { useLocation } from 'react-router-dom';
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
@@ -131,7 +130,7 @@ function Final_Itinerary() {
           onMouseEnter={(e) => (e.target.style.backgroundColor = buttonHoverStyle.backgroundColor)}
           onMouseLeave={(e) => (e.target.style.backgroundColor = buttonStyle.backgroundColor)}
         >
-          Left Button
+          Start
         </button>
       </div>
       <div style={rightStyle}>
@@ -160,7 +159,7 @@ function Final_Itinerary() {
           onMouseEnter={(e) => (e.target.style.backgroundColor = buttonHoverStyle.backgroundColor)}
           onMouseLeave={(e) => (e.target.style.backgroundColor = buttonStyle.backgroundColor)}
         >
-          Right Button
+          Download PDF
         </button>
       </div>
     </div>

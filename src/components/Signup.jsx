@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { signUp, signIn, logOut, signInWithGoogle } from "../utils/auth";
 import { useAuth } from "../context/AuthContext";
 
+
 function SignUp() {
 
   const [email, setEmail] = useState("");

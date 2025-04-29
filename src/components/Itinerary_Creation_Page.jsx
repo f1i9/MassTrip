@@ -291,7 +291,7 @@ function Itinerary_Creation_Page() {
 
    {/* Right column - current itinerary (desktop) */}
    <Col md={3} className="d-none d-md-block">
-      <div className="selected-items-container p-3 border rounded bg-light border-0 rounded-4">
+      <div className="selected-items-container p-3 border rounded bg-light border-0 rounded-4" style={{ maxHeight: '400px', overflowY: 'auto' }}>
         <h6 className="text-center">Current Itinerary</h6>
         {selectedItems.length === 0 ? (
           <p className="text-muted text-center">Add attractions to your itinerary</p>

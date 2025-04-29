@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import { Navbar, Nav, Container } from 'react-bootstrap';
+import { Navbar, Nav, Container, Button } from 'react-bootstrap';
 import Home from './components/Home';
 import Itinerary_Creation_Page from './components/Itinerary_Creation_Page';
 import Login from "./components/Login";
@@ -16,12 +16,8 @@ import AuthForm from "./components/AuthForm";
 
 
 function App() {
-  // keep track of whether the nav menu is open or closed
   const [isNavExpanded, setIsNavExpanded] = useState(false);
-  // check if we're on a mobile screen (less than 992px wide)
   const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
-
-  // refs to help us detect clicks outside the nav or toggle button
   const navRef = useRef(null);
   const toggleRef = useRef(null);
 
@@ -38,6 +34,9 @@ function App() {
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 992);
+      if (window.innerWidth >= 992) {
+        setIsNavExpanded(false);
+      }
     };
 
     const handleClickOutside = (event) => {
@@ -59,32 +58,89 @@ function App() {
       window.removeEventListener('resize', handleResize);
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isNavExpanded]); 
+  }, [isNavExpanded]);
+
+  // Mobile navbar style
+  const mobileNavStyle = {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '250px',
+    height: '100vh',
+    backgroundColor: '#009766',
+    zIndex: 1001,
+    padding: '1rem',
+    paddingTop: '90px',
+    transform: isNavExpanded ? 'translateX(0)' : 'translateX(-100%)',
+    transition: 'transform 0.3s ease-in-out',
+    overflow: 'auto',
+    boxShadow: isNavExpanded ? '2px 0 10px rgba(0,0,0,0.2)' : 'none',
+    display: 'flex',
+    flexDirection: 'column',
+    opacity: 1 // Keep opacity at 1 to maintain color consistency
+  };
+
+  // Style for the login/signup button with darker green color
+  const loginButtonStyle = {
+    backgroundColor: '#00704d', // Darker green color
+    color: 'white', // White text for better contrast
+    border: 'none',
+    borderRadius: '5px',
+    padding: '10px 20px',
+    fontWeight: 'bold',
+    marginTop: '15px',
+    width: '100%',
+    transition: 'background-color 0.2s ease'
+  };
+
+  // Style for footer text in menu
+  const menuFooterStyle = {
+    color: 'white',
+    fontSize: '0.85rem',
+    textAlign: 'center',
+    marginTop: 'auto', // Push to the bottom
+    paddingTop: '20px',
+    paddingBottom: '15px',
+    opacity: 0.9
+  };
+
+  // Fixed background style for clickable area outside menu
+  const overlayStyle = {
+    position: 'fixed',
+    top: 0,
+    left: isNavExpanded ? '250px' : 0, // Start after the menu
+    width: isNavExpanded ? 'calc(100% - 250px)' : '100%', // Cover only the area not covered by menu
+    height: '100vh',
+    backgroundColor: 'transparent', // Make it transparent instead of semi-transparent
+    zIndex: 999, // Below the menu but above content
+    cursor: 'pointer' // Show pointer cursor to indicate clickable
+  };
 
   return (
     <Router>
-      {/* the main navbar at the top */}
       <Navbar
         expand="lg"
         style={{
           height: '80px',
           backgroundColor: '#009766',
-          position: 'relative',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
           zIndex: 1000,
         }}
         variant="dark"
         expanded={isNavExpanded}
-        ref={navRef} 
+        ref={navRef}
       >
         <Container fluid>
-          {/* hamburger button for mobile */}
           <div
             style={{
               position: 'absolute',
               left: '16px',
               top: '50%',
               transform: 'translateY(-50%)',
-              zIndex: 1001,
+              zIndex: 1002,
             }}
             ref={toggleRef}
           >
@@ -99,7 +155,7 @@ function App() {
               <span
                 className="navbar-toggler-icon"
                 style={{
-                  filter: 'brightness(0) invert(1)', 
+                  filter: 'brightness(0) invert(1)',
                   width: '24px',
                   height: '24px',
                   display: 'inline-block',
@@ -108,7 +164,6 @@ function App() {
             </Navbar.Toggle>
           </div>
 
-          {/* the masstrip logo in the center */}
           <div
             style={{
               position: 'absolute',
@@ -118,36 +173,79 @@ function App() {
               zIndex: 1000,
             }}
           >
-            <Navbar.Brand as={Link} to="/" style={{ color: 'white', fontWeight: 'bold' }}>
+            <Navbar.Brand
+              as={Link}
+              to="/"
+              style={{
+                color: 'white',
+                fontWeight: 'bold',
+                fontSize: '1.5rem'
+              }}
+              onClick={handleLinkClick}
+            >
               MassTrip
             </Navbar.Brand>
           </div>
 
-          {/* the menu links that collapse on mobile */}
-          <Navbar.Collapse
-            id="basic-navbar-nav"
-            style={
-              isMobile && isNavExpanded
-                ? {
-                    position: 'absolute',
-                    top: '80px', 
-                    left: 0,
-                    width: '100%',
-                    backgroundColor: '#009766',
-                    zIndex: 999,
-                    padding: '1rem',
-                    height: 'calc(100vh - 80px)', 
-                    overflowY: 'auto', 
-                  }
-                : {} 
-            }
-          >
-            <Nav className="ms-auto">
-              {/* nav links for each page */}
+          {/* Desktop navigation */}
+          {!isMobile && (
+            <Navbar.Collapse id="basic-navbar-nav">
+              <Nav className="ms-auto">
+                <Nav.Link
+                  as={Link}
+                  to="/"
+                  style={{ color: 'white', fontSize: '1.1rem', padding: '0.75rem 1rem' }}
+                  onClick={handleLinkClick}
+                >
+                  Home
+                </Nav.Link>
+                <Nav.Link
+                  as={Link}
+                  to="/itinerary_creation"
+                  style={{ color: 'white', fontSize: '1.1rem', padding: '0.75rem 1rem' }}
+                  onClick={handleLinkClick}
+                >
+                  Create a Road Trip
+                </Nav.Link>
+                <Nav.Link
+                  as={Link}
+                  to="/addlandmark"
+                  style={{ color: 'white', fontSize: '1.1rem', padding: '0.75rem 1rem' }}
+                  onClick={handleLinkClick}
+                >
+                  Add a Landmark
+                </Nav.Link>
+                <Nav.Link
+                  as={Link}
+                  to="/contactUs"
+                  style={{ color: 'white', fontSize: '1.1rem', padding: '0.75rem 1rem' }}
+                  onClick={handleLinkClick}
+                >
+                  Contact and FAQ
+                </Nav.Link>
+                <Nav.Link
+                  as={Link}
+                  to="/signup"
+                  style={{ color: 'white', fontSize: '1.1rem', padding: '0.75rem 1rem' }}
+                  onClick={handleLinkClick}
+                >
+                  {isAuthenticated ? "Log out" : "Login / Sign Up"}
+                </Nav.Link>
+              </Nav>
+            </Navbar.Collapse>
+          )}
+        </Container>
+      </Navbar>
+
+      {/* Mobile navigation menu */}
+      {isMobile && (
+        <div style={mobileNavStyle}>
+          <div>
+            <Nav className="flex-column">
               <Nav.Link
                 as={Link}
                 to="/"
-                style={{ color: 'white', fontSize: '1.1rem', padding: '0.75rem 1rem' }}
+                style={{ color: 'white', fontSize: '1.1rem', padding: '0.75rem 0' }}
                 onClick={handleLinkClick}
               >
                 Home
@@ -155,7 +253,7 @@ function App() {
               <Nav.Link
                 as={Link}
                 to="/itinerary_creation"
-                style={{ color: 'white', fontSize: '1.1rem', padding: '0.75rem 1rem' }}
+                style={{ color: 'white', fontSize: '1.1rem', padding: '0.75rem 0' }}
                 onClick={handleLinkClick}
               >
                 Create a Road Trip
@@ -163,7 +261,7 @@ function App() {
               <Nav.Link
                 as={Link}
                 to="/addlandmark"
-                style={{ color: 'white', fontSize: '1.1rem', padding: '0.75rem 1rem' }}
+                style={{ color: 'white', fontSize: '1.1rem', padding: '0.75rem 0' }}
                 onClick={handleLinkClick}
               >
                 Add a Landmark
@@ -171,27 +269,55 @@ function App() {
               <Nav.Link
                 as={Link}
                 to="/contactUs"
-                style={{ color: 'white', fontSize: '1.1rem', padding: '0.75rem 1rem' }}
+                style={{ color: 'white', fontSize: '1.1rem', padding: '0.75rem 0' }}
                 onClick={handleLinkClick}
               >
-                Contact and FAQ
+                Contact Us
               </Nav.Link>
               <Nav.Link
                 as={Link}
-                to="/signup"
-                style={{ color: 'white', fontSize: '1.1rem', padding: '0.75rem 1rem' }}
+                to="/faq"
+                style={{ color: 'white', fontSize: '1.1rem', padding: '0.75rem 0' }}
                 onClick={handleLinkClick}
               >
-                {isAuthenticated ? "Log out" : "Login / Sign Up"}
+                FAQ
               </Nav.Link>
+              
+              {/* Sign In/Sign Up button directly after FAQ */}
+              <Button
+                as={Link}
+                to="/signup"
+                style={{
+                  ...loginButtonStyle,
+                  marginTop: '8px', // Reduced margin to be closer to FAQ link
+                  marginBottom: '15px' // Add some bottom margin for spacing
+                }}
+                onClick={handleLinkClick}
+              >
+                {isAuthenticated ? "Log out" : "Sign In / Sign Up"}
+              </Button>
             </Nav>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
+          </div>
+          
+          <div style={menuFooterStyle}>
+            <p>© {new Date().getFullYear()} MassTrip</p>
+          </div>
+        </div>
+      )}
 
-      {/* main content area */}
-      <Container className="mt-5" style={{ minHeight: '100vh' }}>
-        {/* define routes for each page */}
+      {/* Transparent overlay to detect clicks outside menu */}
+      {isNavExpanded && isMobile && (
+        <div 
+          style={overlayStyle}
+          onClick={() => setIsNavExpanded(false)}
+        />
+      )}
+
+      <Container className="mt-5" style={{
+        minHeight: '100vh',
+        paddingTop: '80px',
+        marginBottom: '2rem'
+      }}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/itinerary_creation" element={<Itinerary_Creation_Page />} />
@@ -208,7 +334,6 @@ function App() {
         </Routes>
       </Container>
 
-      {/* footer at the bottom */}
       <Footer />
     </Router>
   );
