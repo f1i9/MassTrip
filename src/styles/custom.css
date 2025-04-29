@@ -6,16 +6,15 @@ box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
 }
 
 body {
-background-color: #f8f9fa; 
-color: #343a40; 
-font-family: 'Arial', sans-serif;
-/* overflow: hidden; */
-
+  background-color: #f8f9fa;
+  color: #343a40;
+  font-family: 'Arial', sans-serif;
+  overflow: auto; /* Ensure scrolling is enabled by default */
 }
 
 .navbar {
-background-color: #00b97e; 
-color: #ffffff; 
+background-color: #00b97e;
+color: #ffffff;
 height: 60px;
 }
 
@@ -30,7 +29,7 @@ text-decoration: underline !important;
 
 .container {
 padding: 20px;
-border-radius: 8px; 
+border-radius: 8px;
 }
 
 .form-control {
@@ -39,22 +38,22 @@ box-shadow: none;
 }
 
 .form-control:focus {
-border-color: #28a745; 
-box-shadow: 0 0 5px rgba(40, 167, 69, 0.5); 
+border-color: #28a745;
+box-shadow: 0 0 5px rgba(40, 167, 69, 0.5);
 }
 
 
 button.btn-primary {
-background-color: #008342 !important; 
+background-color: #008342 !important;
 border-color: #008342 !important;
 }
 
 button.btn-primary:hover {
-background-color: #006935 !important; 
+background-color: #006935 !important;
 }
 
 button.btn-secondary {
-background-color: #6c757d !important; 
+background-color: #6c757d !important;
 border-color: #6c757d !important;
 }
 
@@ -81,7 +80,7 @@ text-align: center !important;
 
 .search-input::placeholder {
 color: rgba(255, 255, 255, 0.7) !important;
-/* width: 100% !important; 
+/* width: 100% !important;
 max-width: 500px !important; */
 }
 
@@ -116,6 +115,6 @@ border-color: #005f46 !important;
 
 #regenerate-btn:hover, #regenerate-btn:focus, #regenerate-btn:active,
 #roadtrip-btn:hover, #roadtrip-btn:focus, #roadtrip-btn:active {
-background-color: #001f16 !important; 
+background-color: #001f16 !important;
 border-color: #001f16 !important;
 }
