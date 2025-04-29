@@ -1,159 +1,119 @@
 import { useState } from 'react';
 import { Container, Form, Button, Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { signUp, signIn, logOut, signInWithGoogle } from "../utils/auth";
+import { useAuth } from "../context/AuthContext";
 
 
 function SignUp() {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    confirmPassword: ''
-  });
 
-  const navigate = useNavigate(); // Initialize useNavigate
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [error, setError] = useState("");
+  const { currentUser } = useAuth();
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const navigate = useNavigate();
 
-  const handleSignUp = (e) => {
+  const handleAuth = async (e) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
-      return;
+    setError("");
+    try {
+      if (isSignUp) {
+        await signUp(email, password);
+      } else {
+        await signIn(email, password);
+      }
+    } catch (err) {
+      setError(err.message);
     }
-    console.log("Signing up with", formData);
   };
 
-  const handleBackToLogin = () => {
-    navigate('/login'); // Navigate back to the login page
+  const handleLogOut = async () => {
+    setError("");
+    try {
+      await logOut();
+    } catch (err) {
+      setError(err.message);
+    }
   };
+
+  const handleGoogleSignIn = async () => {
+    setError("");
+    try {
+      await signInWithGoogle();
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  if (currentUser) {
+    return (
+      <div>
+      <div className="justify-content-center text-center">You are logged in as {currentUser.email}!</div>
+      <div className="justify-content-center text-center"><Button onClick={() => handleLogOut()}>Log Out</Button></div>
+      </div>
+    )
+  }
 
   return (
-    <Container className="d-flex flex-column justify-content-center align-items-center min-vh-100">
-      {/* Conditionally render Card for Desktop, otherwise plain layout for Mobile */}
-      <div className="w-100" style={{ maxWidth: '350px' }}>
-        {/* For mobile, we render directly; for desktop, we use a Card */}
-        {window.innerWidth > 768 ? (
-          <Card className="p-4 shadow-lg">
-            <Card.Body>
-              <h2 className="text-center mb-4">Sign Up</h2>
-              <Form onSubmit={handleSignUp}>
-                {/* Email Input */}
-                <Form.Group className="mb-3">
-                  <Form.Label>Email address</Form.Label>
-                  <Form.Control
-                    type="email"
-                    name="email"
-                    placeholder="Enter email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                  />
-                </Form.Group>
+    <Container className="d-flex justify-content-center align-items-center">
+      <Card className="p-4 shadow-lg" style={{ width: '350px' }}>
+        <Card.Body>
+          <h2 className="text-center mb-4">{isSignUp ? "Sign Up" : "Sign In"}</h2>
+          <Form onSubmit={handleAuth}>
+            {/* Email Input */}
+            <Form.Group className="mb-3">
+              <Form.Label>Email address</Form.Label>
+              <Form.Control
+                type="email"
+                name="email"
+                placeholder="Enter email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </Form.Group>
 
-                {/* Password Input */}
-                <Form.Group className="mb-3">
-                  <Form.Label>Password</Form.Label>
-                  <Form.Control
-                    type="password"
-                    name="password"
-                    placeholder="Enter password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    required
-                  />
-                </Form.Group>
+            {/* Password Input */}
+            <Form.Group className="mb-3">
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                type="password"
+                name="password"
+                placeholder="Enter password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </Form.Group>
 
-                {/* Confirm Password Input */}
-                <Form.Group className="mb-3">
-                  <Form.Label>Confirm Password</Form.Label>
-                  <Form.Control
-                    type="password"
-                    name="confirmPassword"
-                    placeholder="Confirm password"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    required
-                  />
-                </Form.Group>
+            {/* Buttons */}
+            <div className="d-grid gap-2">
+              <Button variant="success" type="submit" onClick={() => setIsSignUp(isSignUp)}>
+                {isSignUp ? "Sign Up" : "Sign In"}
+              </Button>
+            </div>
 
-                {/* Buttons */}
-                <div className="d-grid gap-2">
-                  <Button variant="success" type="submit">
-                    Sign Up
-                  </Button>
-                  <Button variant="link" onClick={handleBackToLogin}>
-                    Back to Login
-                  </Button>
-                </div>
-              </Form>
-            </Card.Body>
-          </Card>
-        ) : (
-          // Mobile Layout without Card container
-          // Changed on 4/23/25
-          <>
-            <h2 className="text-center mb-4">Sign Up</h2>
-            <Form onSubmit={handleSignUp}>
-              {/* Email Input */}
-              <Form.Group className="mb-3">
-                <Form.Label>Email address</Form.Label>
-                <Form.Control
-                  type="email"
-                  name="email"
-                  placeholder="Enter email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  // Get shaded background for text fields
-                  style={{ backgroundColor: '#f7f7f7', boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)' }}
-                />
-              </Form.Group>
+            <div className='text-center mt-3'>
+              <p>
+              {isSignUp ? "Already have an account? " : "No account? "}
+              <Button variant='light' onClick={() => setIsSignUp(!isSignUp)}>
+                {isSignUp ? "Sign In" : "Sign Up"}
+              </Button>
+              </p>
+              {error && <p style={{ color: "red" }}>{error}</p>}
+            </div>
 
-              {/* Password Input */}
-              <Form.Group className="mb-3">
-                <Form.Label>Password</Form.Label>
-                <Form.Control
-                  type="password"
-                  name="password"
-                  placeholder="Enter password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                  // Get shaded background for text fields
-                  style={{ backgroundColor: '#f7f7f7', boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)' }}
-                />
-              </Form.Group>
+            <div className='text-center mt-3'>
+              <Button variant="dark" onClick={handleGoogleSignIn}>
+                Login with Google
+              </Button>
+            </div>
 
-              {/* Confirm Password Input */}
-              <Form.Group className="mb-3">
-                <Form.Label>Confirm Password</Form.Label>
-                <Form.Control
-                  type="password"
-                  name="confirmPassword"
-                  placeholder="Confirm password"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  required
-                  // Get shaded background for text fields
-                  style={{ backgroundColor: '#f7f7f7', boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)' }}
-                />
-              </Form.Group>
-
-              {/* Buttons */}
-              <div className="d-grid gap-2">
-                <Button variant="success" type="submit">
-                  Sign Up
-                </Button>
-                <Button variant="link" onClick={handleBackToLogin}>
-                  Back to Login
-                </Button>
-              </div>
-            </Form>
-          </>
-        )}
-      </div>
+          </Form>
+        </Card.Body>
+      </Card>
     </Container>
   );
 }

@@ -11,6 +11,9 @@ import ContactUs from './components/Contact_Us_Page'
 import FAQ from './components/FAQpage'
 import AddLandmark from './components/AddLandmark';
 import React, { useState, useEffect, useRef } from 'react';
+import { useAuth } from "../src/context/AuthContext";
+import AuthForm from "./components/AuthForm";
+
 
 function App() {
   const [isNavExpanded, setIsNavExpanded] = useState(false);
@@ -18,6 +21,12 @@ function App() {
   const navRef = useRef(null);
   const toggleRef = useRef(null);
 
+  const { isAuthenticated } = useAuth();
+
+  console.log("isAuthenticated:", isAuthenticated);
+
+
+  // close the menu when a link is clicked
   const handleLinkClick = () => {
     setIsNavExpanded(false);
   };
@@ -178,124 +187,69 @@ function App() {
             </Navbar.Brand>
           </div>
 
-          {/* For mobile, the menu is separate from Navbar.Collapse for full-height effect */}
-          {isMobile && (
-            <div style={mobileNavStyle}>
-              {/* Top section with navigation links */}
-              <div>
-                <Nav className="flex-column">
-                  <Nav.Link
-                    as={Link}
-                    to="/"
-                    style={{ color: 'white', fontSize: '1.1rem', padding: '0.75rem 1rem' }}
-                    onClick={handleLinkClick}
-                    className="nav-link-hover"
-                  >
-                    Home
-                  </Nav.Link>
-                  <Nav.Link
-                    as={Link}
-                    to="/itinerary_creation"
-                    style={{ color: 'white', fontSize: '1.1rem', padding: '0.75rem 1rem' }}
-                    onClick={handleLinkClick}
-                    className="nav-link-hover"
-                  >
-                    Create a Road Trip
-                  </Nav.Link>
-                  <Nav.Link
-                    as={Link}
-                    to="/addlandmark"
-                    style={{ color: 'white', fontSize: '1.1rem', padding: '0.75rem 1rem' }}
-                    onClick={handleLinkClick}
-                    className="nav-link-hover"
-                  >
-                    Add a Landmark
-                  </Nav.Link>
-                  <Nav.Link
-                    as={Link}
-                    to="/contactUs"
-                    style={{ color: 'white', fontSize: '1.1rem', padding: '0.75rem 1rem' }}
-                    onClick={handleLinkClick}
-                    className="nav-link-hover"
-                  >
-                    Contact and FAQ
-                  </Nav.Link>
-                </Nav>
-                
-                {/* Login/Signup Button with lighter green and more rounded corners */}
-                <Button
-                  as={Link}
-                  to="/login"
-                  style={loginButtonStyle}
-                  onClick={handleLinkClick}
-                  className="mb-3"
-                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#45a049'} // Darker on hover
-                  onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#4CAF50'} // Back to original
-                >
-                  Sign up / Login
-                </Button>
-              </div>
-
-              {/* Bottom section with text */}
-              <div style={menuFooterStyle}>
-                <p>© 2023 MassTrip</p>
-                <p>Discover Massachusetts one trip at a time</p>
-              </div>
-            </div>
-          )}
-
-          {/* Only show Navbar.Collapse for desktop */}
-          {!isMobile && (
-            <Navbar.Collapse id="basic-navbar-nav">
-              <Nav className="ms-auto">
-                <Nav.Link
-                  as={Link}
-                  to="/"
-                  style={{ color: 'white', fontSize: '1.1rem', padding: '0.75rem 1rem' }}
-                  onClick={handleLinkClick}
-                  className="nav-link-hover"
-                >
-                  Home
-                </Nav.Link>
-                <Nav.Link
-                  as={Link}
-                  to="/itinerary_creation"
-                  style={{ color: 'white', fontSize: '1.1rem', padding: '0.75rem 1rem' }}
-                  onClick={handleLinkClick}
-                  className="nav-link-hover"
-                >
-                  Create a Road Trip
-                </Nav.Link>
-                <Nav.Link
-                  as={Link}
-                  to="/addlandmark"
-                  style={{ color: 'white', fontSize: '1.1rem', padding: '0.75rem 1rem' }}
-                  onClick={handleLinkClick}
-                  className="nav-link-hover"
-                >
-                  Add a Landmark
-                </Nav.Link>
-                <Nav.Link
-                  as={Link}
-                  to="/contactUs"
-                  style={{ color: 'white', fontSize: '1.1rem', padding: '0.75rem 1rem' }}
-                  onClick={handleLinkClick}
-                  className="nav-link-hover"
-                >
-                  Contact and FAQ
-                </Nav.Link>
-                <Nav.Link
-                  as={Link}
-                  to="/login"
-                  style={{ color: 'white', fontSize: '1.1rem', padding: '0.75rem 1rem' }}
-                  onClick={handleLinkClick}
-                  className="nav-link-hover"
-                >
-                  Sign up/Login
-                </Nav.Link>
-              </Nav>
-            </Navbar.Collapse>
-          )}
+          {/* the menu links that collapse on mobile */}
+          <Navbar.Collapse
+            id="basic-navbar-nav"
+            style={
+              isMobile && isNavExpanded
+                ? {
+                    position: 'absolute',
+                    top: '80px', 
+                    left: 0,
+                    width: '100%',
+                    backgroundColor: '#009766',
+                    zIndex: 999,
+                    padding: '1rem',
+                    height: 'calc(100vh - 80px)', 
+                    overflowY: 'auto', 
+                  }
+                : {} 
+            }
+          >
+            <Nav className="ms-auto">
+              {/* nav links for each page */}
+              <Nav.Link
+                as={Link}
+                to="/"
+                style={{ color: 'white', fontSize: '1.1rem', padding: '0.75rem 1rem' }}
+                onClick={handleLinkClick}
+              >
+                Home
+              </Nav.Link>
+              <Nav.Link
+                as={Link}
+                to="/itinerary_creation"
+                style={{ color: 'white', fontSize: '1.1rem', padding: '0.75rem 1rem' }}
+                onClick={handleLinkClick}
+              >
+                Create a Road Trip
+              </Nav.Link>
+              <Nav.Link
+                as={Link}
+                to="/addlandmark"
+                style={{ color: 'white', fontSize: '1.1rem', padding: '0.75rem 1rem' }}
+                onClick={handleLinkClick}
+              >
+                Add a Landmark
+              </Nav.Link>
+              <Nav.Link
+                as={Link}
+                to="/contactUs"
+                style={{ color: 'white', fontSize: '1.1rem', padding: '0.75rem 1rem' }}
+                onClick={handleLinkClick}
+              >
+                Contact and FAQ
+              </Nav.Link>
+              <Nav.Link
+                as={Link}
+                to="/signup"
+                style={{ color: 'white', fontSize: '1.1rem', padding: '0.75rem 1rem' }}
+                onClick={handleLinkClick}
+              >
+                {isAuthenticated ? "Log out" : "Login / Sign Up"}
+              </Nav.Link>
+            </Nav>
+          </Navbar.Collapse>
         </Container>
       </Navbar>
 
@@ -315,12 +269,16 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/itinerary_creation" element={<Itinerary_Creation_Page />} />
-          <Route path="/login" element={<Login />} />
+          {/* <Route path="/login" element={<Login />} /> */}
           <Route path="/signup" element={<SignUp />} />
+          {/* <Route path="/signup" element={<AuthForm />} /> */}
+
           <Route path="/contactUs" element={<ContactUs />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/addlandmark" element={<AddLandmark />} />
           <Route path="/final_itinerary" element={<Final_Itinerary />} />
+          {/* <Route path="/auth" element={<AuthForm />} /> */}
+          
         </Routes>
       </Container>
 
