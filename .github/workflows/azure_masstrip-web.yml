@@ -41,7 +41,7 @@ jobs:
         run: |
           mkdir deploy
           cp -r backend/* deploy/
-          cp -r dist deploy/
+          cp -r dist deploy/dist
           echo "Deploy folder ready"
 
       # Zip for deployment
