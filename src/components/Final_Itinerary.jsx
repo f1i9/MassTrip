@@ -9,6 +9,8 @@ function Final_Itinerary() {
   const [directionsResponse, setDirectionsResponse] = useState(null);
   const [totalTime, setTotalTime] = useState(null);
   const [selectedItems, setSelectedItems] = useState([]);
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+  
 
   const location = useLocation();
   const initialItems = location.state?.selectedItems || [];
@@ -117,7 +119,7 @@ function Final_Itinerary() {
     const enhanceWithAddresses = async () => {
       const itemsWithAddress = await Promise.all(
         initialItems.map(async (item) => {
-          if (item.location) {
+          if (item.location && !item.address) {
             const address = await fetchAddressFromLatLng(item.location.lat, item.location.lng);
             return { ...item, address };
           }
@@ -126,9 +128,9 @@ function Final_Itinerary() {
       );
       setSelectedItems(itemsWithAddress);
     };
-
+  
     enhanceWithAddresses();
-  }, []);
+  }, []);  
 
   // Get directions once map is ready and items loaded
   useEffect(() => {
@@ -186,21 +188,33 @@ function Final_Itinerary() {
   // Generate PDF
   const generatePDF = () => {
     const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+  
+    const title = 'Road Trip Itinerary';
     doc.setFontSize(18);
-    doc.text('Your Road Trip Itinerary', 20, 20);
-
-    let yPosition = 30;
+    const titleWidth = doc.getTextWidth(title);
+    doc.text(title, (pageWidth - titleWidth) / 2, 20);
+  
+    const dateStr = `Created ${new Date().toLocaleDateString()}`;
+    doc.setFontSize(12);
+    const dateWidth = doc.getTextWidth(dateStr);
+    doc.text(dateStr, (pageWidth - dateWidth) / 2, 28);
+  
+    let yPosition = 40;
+  
     selectedItems.forEach((item, index) => {
+      const label = String.fromCharCode(65 + index);
       doc.setFontSize(12);
-      doc.text(`${index + 1}. ${item.name}`, 20, yPosition);
-      doc.text(`Address: ${item.address || 'Loading...'}`, 20, yPosition + 10);
-      yPosition += 20;
+      doc.text(`${label}. ${item.name}`, 20, yPosition);
+      doc.text(`${item.address || 'Loading...'}`, 25, yPosition + 10);
+      yPosition += 25;
     });
-
+  
     doc.setFontSize(14);
     doc.text(`Total Time: ${totalTime || 'Calculating...'}`, 20, yPosition);
     doc.save('itinerary.pdf');
   };
+  
 
   return (
     <div style={containerStyle}>
@@ -213,23 +227,24 @@ function Final_Itinerary() {
               zoom={12}
               onLoad={() => setMapLoaded(true)}
             >
-              {selectedItems.map((item, index) =>
-                item.location ? (
-                  <Marker
-                    key={index}
-                    position={{
-                      lat: item.location.lat,
-                      lng: item.location.lng,
-                    }}
-                    title={item.name}
-                  />
-                ) : null
-              )}
+              {selectedItems.map((item, index) => (
+                <Marker
+                  key={index}
+                  position={item.location}
+                  label={String.fromCharCode(65 + index)}
+                  icon={
+                    hoveredIndex === index
+                      ? 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png' // highlighted icon
+                      : 'http://maps.google.com/mapfiles/ms/icons/red-dot.png' // normal icon
+                  }
+                />
+              ))}
               {directionsResponse && (
                 <DirectionsRenderer
                   options={{
                     directions: directionsResponse,
-                    preserveViewport: true,
+                    // preserveViewport: true,
+                    suppressMarkers: true
                   }}
                 />
               )}
@@ -251,14 +266,21 @@ function Final_Itinerary() {
           <h2 style={{ textAlign: 'center' }}>Final Itinerary</h2>
           <ul style={{ listStyleType: 'none', paddingLeft: '0' }}>
             {selectedItems.length > 0 ? (
-              selectedItems.map((item, index) => (
-                <li key={index}>
-                  <div style={cardStyle}>
-                    <h6>{item.name}</h6>
-                    <p>{item.address || 'Loading address...'}</p>
-                  </div>
-                </li>
-              ))
+              selectedItems.map((item, index) => {
+                const label = String.fromCharCode(65 + index); // A = 65
+                return (
+                  <li key={index}>
+  <div
+    style={cardStyle}
+    onMouseEnter={() => setHoveredIndex(index)}
+    onMouseLeave={() => setHoveredIndex(null)}
+  >
+    <h6>{label}. {item.name}</h6>
+    <p>{item.address || 'Loading address...'}</p>
+  </div>
+</li>
+                );
+              })
             ) : (
               <p style={{ textAlign: 'center' }}>No items in your itinerary</p>
             )}
