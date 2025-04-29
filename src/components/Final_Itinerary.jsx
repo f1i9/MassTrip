@@ -21,7 +21,7 @@ function Final_Itinerary() {
   
   const mapContainerStyle = {
     width: '100%',
-    height: '80vh',
+    height: '85vh',
     borderRadius: '20px'
   };
 
@@ -275,7 +275,7 @@ function Final_Itinerary() {
           onMouseEnter={(e) => (e.target.style.backgroundColor = buttonHoverStyle.backgroundColor)}
           onMouseLeave={(e) => (e.target.style.backgroundColor = buttonStyle.backgroundColor)}
         >
-          Download to PDF
+          Download (PDF)
         </button>
       </div>
     </div>
