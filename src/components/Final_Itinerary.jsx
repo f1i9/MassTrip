@@ -17,7 +17,7 @@ function Final_Itinerary() {
   const location = useLocation();
   const selectedItems = location.state?.selectedItems || [];
 
-  const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
+  const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
   console.log("Google Maps API Key:", GOOGLE_MAPS_API_KEY);
 
