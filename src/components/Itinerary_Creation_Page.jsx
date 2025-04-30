@@ -365,7 +365,7 @@ function Itinerary_Creation_Page() {
       </ul>
     )}
         <div className="mt-3 d-grid">
-          <Button id="roadtrip-btn" variant="primary" onClick={handleRoadTripClick}>Take a road trip!</Button>
+          <Button id="roadtrip-btn" variant="primary" onClick={handleRoadTripClick}>Review My Trip</Button>
           <div className="mt-2 d-grid">
             <Button variant="outline-light" onClick={() => setSelectedItems([])}>
               Clear Itinerary
