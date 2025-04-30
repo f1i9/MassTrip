@@ -43,7 +43,7 @@ function Home() {
     if (query.length > 2 && shouldFetchSuggestions) {
       const fetchSuggestions = async () => {
         try {
-          const response = await axios.get('http://localhost:3001/api/autocomplete', {
+          const response = await axios.get('/api/autocomplete', {
             params: { input: query }
           });
           // Filter suggestions to ensure they relate to Massachusetts

@@ -52,7 +52,7 @@ function Itinerary_Creation_Page() {
 
     const useNearbySearch = async (latitude, longitude) => {
       try {
-        const nearbyResponse = await axios.get('https://masstrip-web.azurewebsites.net/api/nearby', {
+        const nearbyResponse = await axios.get('/api/nearby', {
           params: {
             lat: latitude,
             lng: longitude,
@@ -80,7 +80,7 @@ function Itinerary_Creation_Page() {
 
     const fallbackToIP = async () => {
       try {
-        const locationResponse = await axios.get('https://masstrip-web.azurewebsites.net/api/nearby');
+        const locationResponse = await axios.get('/api/nearby');
         const { latitude, longitude } = locationResponse.data;
         await useNearbySearch(latitude, longitude);
       } catch (err) {

@@ -22,7 +22,7 @@ function AddLandmark() {
   useEffect(() => {
     const loadGoogleMaps = async () => {
       try {
-        const key = import.meta.env.VITE_GOOGLE_API_KEY;
+        const key = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
     
         if (!key) {
           throw new Error('Google Maps API key not found');
