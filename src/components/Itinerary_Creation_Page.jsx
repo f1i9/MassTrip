@@ -265,15 +265,6 @@ function Itinerary_Creation_Page() {
             ))}
           </div>
 
-          <div className="fixed-info-container">
-            <Card className="border-0 bg-light rounded-4 mt-3">
-              <Card.Body>
-                <h6>Estimated Time of Arrival</h6>
-                <p className="text-muted">Description</p>
-              </Card.Body>
-            </Card>
-          </div>
-
           <div className="mt-3 d-flex gap-2">
           {/* updated the button to clear search results EK 4/16 */}
           <Button variant="primary" className="flex-grow-1" onClick={handleClear}>Clear</Button> 
@@ -291,7 +282,7 @@ function Itinerary_Creation_Page() {
 
    {/* Right column - current itinerary (desktop) */}
    <Col md={3} className="d-none d-md-block">
-      <div className="selected-items-container p-3 border rounded bg-light border-0 rounded-4">
+      <div className="selected-items-container p-3 border rounded bg-light border-0 rounded-4" style={{ maxHeight: '400px', overflowY: 'auto' }}>
         <h6 className="text-center">Current Itinerary</h6>
         {selectedItems.length === 0 ? (
           <p className="text-muted text-center">Add attractions to your itinerary</p>

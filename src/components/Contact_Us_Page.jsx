@@ -1,171 +1,265 @@
-/*
-* Author: Evan Kuczynski 3/18/25
-* This page is the react code for the contact us page
-* This page is mainly for contacting the users of MassTrip
-* */
-
-import {useState} from 'react';
-// import { Container, Form, Button, Alert } from 'react-bootstrap';
+import {useState, useEffect} from 'react';
 import {Container, Row, Col, Form, Button, Alert} from 'react-bootstrap';
-// import icons
 import {FaFacebook, FaInstagram} from 'react-icons/fa';
-import '../styles/Contact_Us.css'; // Import the specific CSS file for ContactUs
-
+import '../styles/Contact_Us.css';
 
 function ContactUs() {
-    // create a state for form input fields and form submission status
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        message: ''
-    });
+    // Form data and validation states
+    const [formData, setFormData] = useState({name: '', email: '', message: ''});
+    const [formErrors, setFormErrors] = useState({name: '', email: '', message: ''});
+    const [touched, setTouched] = useState({name: false, email: false, message: false});
+    const [formSubmitted, setFormSubmitted] = useState(false);
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
-    // these are the allerts that show when the inputs are incorrect or successful
-    const [showAlert, setShowAlert] = useState(false);
-    const [alertMessage, setAlertMessage] = useState('');
-    const [alertVariant, setAlertVariant] = useState('success');
+    // Handle window resize for responsive design
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
+    // Validate fields when they change
+    useEffect(() => {
+        for (const field in touched) {
+            if (touched[field]) validateField(field, formData[field]);
+        }
+    }, [formData, touched]);
 
+    // Field validation logic
+    const validateField = (field, value) => {
+        let error = '';
+        
+        switch(field) {
+            case 'name':
+                error = !value.trim() ? 'Name is required' : '';
+                break;
+                
+            case 'email':
+                if (!value.trim()) {
+                    error = 'Email is required';
+                } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+                    error = 'Please enter a valid email address';
+                }
+                break;
+                
+            case 'message':
+                if (!value.trim()) {
+                    error = 'Message is required';
+                } else if (value.trim().length < 10) {
+                    error = 'Message should be at least 10 characters';
+                }
+                break;
+        }
+        
+        setFormErrors(prev => ({...prev, [field]: error}));
+        return !error;
+    };
+
+    // Handle input changes
     const handleChange = (e) => {
         const {name, value} = e.target;
-        setFormData({
-            ...formData,
-            [name]: value
-        });
+        setFormData(prev => ({...prev, [name]: value}));
+    };
+    
+    // Handle field blur
+    const handleBlur = (e) => {
+        const {name} = e.target;
+        setTouched(prev => ({...prev, [name]: true}));
     };
 
     // Handle form submission
     const handleSubmit = (e) => {
-        // prevents default html
         e.preventDefault();
-
-
-        // if the name, email, or message are not filled out in the contact us fields
-        // then we are going to set a alert
-        if (!formData.name || !formData.email || !formData.message) {
-            setAlertMessage('Please fill out all fields.');
-            setAlertVariant('danger');
-            setShowAlert(true);
-            return;
+        
+        // Mark all fields as touched
+        setTouched({name: true, email: true, message: true});
+        
+        // Validate all fields
+        const isValid = ['name', 'email', 'message'].every(
+            field => validateField(field, formData[field])
+        );
+        
+        if (isValid) {
+            setFormSubmitted(true);
+            setFormData({name: '', email: '', message: ''});
+            setTouched({name: false, email: false, message: false});
+            
+            setTimeout(() => setFormSubmitted(false), 5000);
         }
-
-        // alerts if the message is successful
-        setAlertMessage('Thank you for contacting us! We will get back to you soon.');
-        setAlertVariant('success');
-        setShowAlert(true);
-
-        // clear the fields for the forms
-        setFormData({
-            name: '',
-            email: '',
-            message: ''
-        });
     };
 
-    return (
-        // this is the classic container we include
-        <Container className="mt-5">
+    // Common styles
+    const styles = {
+        input: {
+            padding: '12px',
+            borderRadius: '8px',
+            border: '1px solid #e1e1e1',
+            backgroundColor: '#f9f9f9',
+            width: '100%',
+            marginBottom: '6px'
+        },
+        error: {
+            color: '#dc3545',
+            fontSize: '0.875rem',
+            marginBottom: '16px',
+            display: 'block'
+        },
+        footer: {
+            marginTop: isMobile ? '20px' : '40px',
+            borderTop: '1px solid #f0f0f0',
+            paddingTop: isMobile ? '15px' : '25px'
+        },
+        alert: {
+            marginBottom: '25px',
+            borderRadius: '8px'
+        },
+        submitBtn: {
+            padding: '12px',
+            borderRadius: '8px',
+            fontSize: '1.1rem',
+            fontWeight: '500',
+            width: '100%'
+        }
+    };
 
-            {showAlert && (
-                <Alert variant={alertVariant} onClose={() => setShowAlert(false)} dismissible>
-                    {alertMessage}
+    // Render the contact form
+    const renderForm = () => (
+        <Form noValidate onSubmit={handleSubmit}>
+            {formSubmitted && (
+                <Alert variant="success" style={styles.alert}>
+                    Thank you for contacting us! We will get back to you soon.
                 </Alert>
             )}
-            {/**/}
-            <Row>
-                {/*socials and misc text*/}
-                <Col md={6} className="d-flex flex-column justify-content-lg-start align-items-start">
-                    <h3>Get in Touch</h3>
-                    <p></p>
-                    <p>Have questions, feedback, or suggestions? We’d love to hear from you!</p>
-                    <p>Let us know how we can improve your road trip experience.</p>
-                    <p>Please check out the FAQ link below before you add any questions. </p>
-                    <p></p>
-                    <a href="/faq" >Common FAQs</a>
-                    <p></p>
+            
+            <Form.Group className="mb-3">
+                <Form.Label style={{fontWeight: '500', marginBottom: '8px'}}>Your Name</Form.Label>
+                <Form.Control
+                    type="text"
+                    placeholder="Enter your name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    style={styles.input}
+                />
+                {touched.name && formErrors.name && (
+                    <span style={styles.error}>{formErrors.name}</span>
+                )}
+            </Form.Group>
 
+            <Form.Group className="mb-3">
+                <Form.Label style={{fontWeight: '500', marginBottom: '8px'}}>Your Email</Form.Label>
+                <Form.Control
+                    type="email"
+                    placeholder="Enter your email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    style={styles.input}
+                />
+                {touched.email && formErrors.email && (
+                    <span style={styles.error}>{formErrors.email}</span>
+                )}
+            </Form.Group>
 
-                    <p>Follow us on social media for updates and more information.</p>
-                    <p></p>
-                    <div className="mb-3">
-                        <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" className="mx-2">
-                            <FaFacebook size={30}/>
-                        </a>
-                        <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" className="mx-2">
-                            <FaInstagram size={30}/>
-                        </a>
-                    </div>
+            <Form.Group className="mb-3">
+                <Form.Label style={{fontWeight: '500', marginBottom: '8px'}}>Your Message</Form.Label>
+                <Form.Control
+                    as="textarea"
+                    rows={4}
+                    placeholder="Write your message"
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    style={styles.input}
+                />
+                {touched.message && formErrors.message && (
+                    <span style={styles.error}>{formErrors.message}</span>
+                )}
+            </Form.Group>
+
+            <Button variant="primary" type="submit" style={styles.submitBtn}>
+                Submit
+            </Button>
+        </Form>
+    );
+
+    // Render contact info section
+    const renderContactInfo = () => (
+        <>
+            <h3 className="mb-3">Get in Touch</h3>
+            <p className="mb-3">Have questions, feedback, or suggestions? We'd love to hear from you!</p>
+            <p className="mb-3">Let us know how we can improve your road trip experience.</p>
+            <p className="mb-3">Please check out the FAQ link below before you add any questions.</p>
+            <a href="/faq" className="mb-3 d-inline-block" style={{fontSize: '1.1rem', textDecoration: 'none'}}>
+                Common FAQs
+            </a>
+            <p className="mb-3">Follow us on social media for updates and more information.</p>
+        </>
+    );
+
+    // Render footer with social media links
+    const renderFooter = () => (
+        <footer style={styles.footer}>
+            <Row className="align-items-center">
+                <Col xs={4} className="d-flex justify-content-start">
+                    <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" className="me-3" style={{color: "#3b5998"}}>
+                        <FaFacebook size={isMobile ? 24 : 28}/>
+                    </a>
+                    <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" style={{color: "#e1306c"}}>
+                        <FaInstagram size={isMobile ? 24 : 28}/>
+                    </a>
                 </Col>
-
-
-                {/* Right Column (Form) */}
-                <Col md={5}>
-                    {/*https://react-bootstrap.netlify.app/docs/forms/form-control/*/}
-                    <Form onSubmit={handleSubmit} className="d-flex flex-column justify-content-end">
-                        <Form.Group controlId="formName" className="mb-3">
-                            {/*<Form.Label>Name</Form.Label>*/}
-                            <Form.Control
-                                type="text"
-                                placeholder="Enter your name"
-                                name="name"
-                                value={formData.name}
-                                onChange={handleChange}
-                                className="w-100"  // Ensures the input takes up the full width of the column
-                            />
-                        </Form.Group>
-
-                        {/* Form for email */}
-                        <Form.Group controlId="formEmail" className="mb-3">
-                            {/*<Form.Label>Email address</Form.Label>*/}
-                            <Form.Control
-                                type="email"
-                                placeholder="Enter your email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleChange}
-                                className="w-100 custom-background"
-                            />
-                        </Form.Group>
-
-                        <Form.Group controlId="formMessage" className="mb-3">
-                            {/*<Form.Label>Message</Form.Label>*/}
-                            <Form.Control
-                                as="textarea"
-                                rows={3}
-                                placeholder="Write your message"
-                                name="message"
-                                value={formData.message}
-                                onChange={handleChange}
-                                className="w-100"
-                            />
-                        </Form.Group>
-
-                        <Button variant="primary" type="submit" className="w-100">Submit</Button>
-                    </Form>
+                <Col xs={4} className="text-center">
+                    <h5 className="m-0">Contact Us</h5>
                 </Col>
+                <Col xs={4}></Col>
             </Row>
+        </footer>
+    );
 
+    return (
+        <Container fluid className="px-0">
+            {/* Desktop version with shadow box */}
+            <div className="d-none d-md-block">
+                <div style={{
+                    boxShadow: '0 8px 30px rgba(0, 0, 0, 0.1)',
+                    borderRadius: '12px',
+                    backgroundColor: 'white',
+                    padding: '40px',
+                    margin: '40px auto',
+                    maxWidth: '1200px'
+                }}>
+                    <Row className="align-items-start">
+                        <Col md={6} className="pe-md-5 mb-4 mb-md-0">
+                            {renderContactInfo()}
+                        </Col>
+                        <Col md={6}>
+                            {renderForm()}
+                        </Col>
+                    </Row>
+                    {renderFooter()}
+                </div>
+            </div>
 
-            {/*this footer shows the masstrip copyright and the name of the page*/}
-            <footer className="mt-5 bg-white text-dark py-3">
-                <Row>
-                    {/* Left most column just for holding the space but nothing should be inside */}
-                    <Col xs={4} className="d-flex justify-content-start"></Col>
-
-                    {/* Middle Column just says the name of the current page (in this case "contact us") */}
-                    <Col xs={4} className="text-center"><h4>Contact Us</h4></Col>
-
-                    {/* Right Column (Copyright info) */}
-                    <Col xs={4} className="d-flex justify-content-end">
-                        <div>
-                            <p>&copy; {new Date().getFullYear()} MassTrip</p>
-                        </div>
-                    </Col>
-                </Row>
-            </footer>
+            {/* Mobile version without shadow box */}
+            <div className="d-block d-md-none">
+                <Container className="py-3">
+                    <Row className="align-items-start">
+                        <Col xs={12} className="mb-4">
+                            {renderContactInfo()}
+                        </Col>
+                        <Col xs={12}>
+                            {renderForm()}
+                        </Col>
+                    </Row>
+                    {renderFooter()}
+                </Container>
+            </div>
         </Container>
     );
 }
-
 
 export default ContactUs;

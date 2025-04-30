@@ -62,6 +62,21 @@ app.get('/api/nearby', async (req, res) => {
   }
 });
 
+app.get('/api/autocomplete', async (req, res) => {
+  const input = req.query.input;
+  console.log("Received input:", input);
+  const googleMapsUrl = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${input}&key=${GOOGLE_API_KEY}`;
+  console.log("Requesting URL:", googleMapsUrl);
+
+  try {
+    const response = await axios.get(googleMapsUrl);
+    res.json(response.data.predictions);
+  } catch (error) {
+    console.error('Error fetching data from Google Maps API:', error);
+    res.status(500).json({ error: 'Failed to get autocomplete results' });
+  }
+});
+
 // === Serve Static Frontend Files ===
 
 // Serve static files from the Vite build output (dist folder)

@@ -1,13 +1,6 @@
-/*
-* Author: Evan Kuczynski 3/18/25
-* This page is the react code for the FAQ page
-* This page is mainly for answering questions about MassTrip
-* */
-
-
 import { useState } from 'react';
-import { Container, Accordion, Card, Button, Row, Col } from 'react-bootstrap';
-import { FaFacebook, FaInstagram } from 'react-icons/fa'; // Importing the icons
+import { Container, Accordion, Row, Col } from 'react-bootstrap';
+import { FaFacebook, FaInstagram } from 'react-icons/fa';
 
 function FAQ() {
     // FAQ questions and answers
@@ -30,68 +23,85 @@ function FAQ() {
         }
     ];
 
-    // State for active accordion item
-    const [activeKey, setActiveKey] = useState('0');
-
-    // Handle selection of accordion item
-    const handleSelect = (key) => {
-        setActiveKey(key);
-    };
-
     return (
-        <Container className="mt-5">
-            <h1 className="text-center mb-4">Frequently Asked Questions</h1>
-            {/*this is the documentation*/}
-            {/*https://react-bootstrap.netlify.app/docs/components/accordion*/}
-            <Accordion activeKey={activeKey} onSelect={handleSelect}>
-                {faqData.map((faq, index) => (
-                    <Card key={index}>
-                        <Accordion.Header>
-                            <Button variant="link" eventKey={String(index)}>
-                                {faq.question}
-                            </Button>
-                        </Accordion.Header>
-                        <Accordion.Body eventKey={String(index)}>
-                            {faq.answer}
-                        </Accordion.Body>
-                    </Card>
-                ))}
-            </Accordion>
+        <>
+            {/* Desktop version with shadow */}
+            <div className="d-none d-md-block">
+                <Container className="mt-4 px-3" style={{
+                    boxShadow: '0 0.5rem 1rem rgba(0, 0, 0, 0.15)',
+                    borderRadius: '0.5rem',
+                    backgroundColor: 'white',
+                    padding: '1.5rem'
+                }}>
+                    <h1 className="text-center mb-4 fs-3">Frequently Asked Questions</h1>
 
-            {/* Footer Section */}
-            <footer className="mt-5 bg-white text-dark py-3">
-                {/*documetation for the row in react*/}
-                {/*https://react-bootstrap.netlify.app/docs/layout/grid/*/}
-                <Row>
-                    {/* Left most column for spacing */}
-                    <Col xs={4} className="d-flex justify-content-start">
-                        <div className="ml-3">
-                            {/* Social Media Links */}
-                            <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer"
-                               className="mx-2">
-                                <FaFacebook size={24}/>
-                            </a>
-                            <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer"
-                               className="mx-2">
-                                <FaInstagram size={24}/>
-                            </a>
-                        </div>
-                    </Col>
+                    <Accordion className="mb-5" defaultActiveKey="0">
+                        {faqData.map((faq, index) => (
+                            <Accordion.Item key={index} eventKey={String(index)} className="mb-3 border rounded-3">
+                                <Accordion.Header className="py-2">
+                                    {faq.question}
+                                </Accordion.Header>
+                                <Accordion.Body className="py-3">
+                                    {faq.answer}
+                                </Accordion.Body>
+                            </Accordion.Item>
+                        ))}
+                    </Accordion>
 
-                    {/* Middle Column for Contact Us */}
-                    <Col xs={4} className="text-center">
-                        <h4>Contact Us</h4>
-                    </Col>
+                    <footer className="mt-5 bg-white text-dark py-3">
+                        <Row className="align-items-center">
+                            <Col xs={12} md={4} className="d-flex justify-content-center justify-content-md-start mb-3 mb-md-0">
+                                <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" className="me-3" style={{ color: "#3b5998" }}>
+                                    <FaFacebook size={24}/>
+                                </a>
+                                <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" style={{ color: "#e1306c" }}>
+                                    <FaInstagram size={24}/>
+                                </a>
+                            </Col>
+                            <Col xs={12} md={4} className="text-center mb-3 mb-md-0">
+                                <h4 className="m-0">FAQs</h4>
+                            </Col>
+                        </Row>
+                    </footer>
+                </Container>
+            </div>
 
-                    {/* Right Column for Copyright and Social Media */}
-                    <Col xs={4} className="d-flex justify-content-end align-items-center">
-                        <div>
-                            <p>&copy; {new Date().getFullYear()} MassTrip</p>
-                        </div>
-                    </Col>
-                </Row>
-            </footer>
-        </Container>
+            {/* Mobile version without shadow */}
+            <div className="d-block d-md-none">
+                <Container className="mt-4 px-3">
+                    <h1 className="text-center mb-4 fs-3">Frequently Asked Questions</h1>
+
+                    <Accordion className="mb-5" defaultActiveKey="0">
+                        {faqData.map((faq, index) => (
+                            <Accordion.Item key={index} eventKey={String(index)} className="mb-3 border rounded-3">
+                                <Accordion.Header className="py-2">
+                                    {faq.question}
+                                </Accordion.Header>
+                                <Accordion.Body className="py-3">
+                                    {faq.answer}
+                                </Accordion.Body>
+                            </Accordion.Item>
+                        ))}
+                    </Accordion>
+
+                    <footer className="mt-5 bg-white text-dark py-3">
+                        <Row className="align-items-center">
+                            <Col xs={12} md={4} className="d-flex justify-content-center justify-content-md-start mb-3 mb-md-0">
+                                <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" className="me-3" style={{ color: "#3b5998" }}>
+                                    <FaFacebook size={24}/>
+                                </a>
+                                <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" style={{ color: "#e1306c" }}>
+                                    <FaInstagram size={24}/>
+                                </a>
+                            </Col>
+                            <Col xs={12} md={4} className="text-center mb-3 mb-md-0">
+                                <h4 className="m-0">FAQs</h4>
+                            </Col>
+                        </Row>
+                    </footer>
+                </Container>
+            </div>
+        </>
     );
 }
 
