@@ -336,7 +336,7 @@ function App() {
         )}
 
         <Container className="mt-5" style={{
-          minHeight: '100vh',
+          minHeight: '84vh',
           paddingTop: '80px',
           marginBottom: '2rem'
         }}>
