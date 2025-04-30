@@ -12,6 +12,7 @@ function Home() {
   const [activeIndex, setActiveIndex] = useState(-1);
   const [shouldFetchSuggestions, setShouldFetchSuggestions] = useState(true);
   const [locationChosen, setLocationChosen] = useState(false);
+  const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
   
   const navigate = useNavigate();
   const inputRef = useRef(null);
@@ -62,16 +63,65 @@ function Home() {
     }
   }, [query, shouldFetchSuggestions]);
 
-  // Check for valid selection before proceeding
-  const handleSearch = () => {
+  // Geolocation handling
+  const getLocation = () =>
+    new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => resolve(pos.coords),
+        (err) => reject(err)
+      );
+    });
+
+  // Handle search logic and geolocation
+  const handleSearch = async () => {
     if (inputError) return;
     if (!locationChosen) {
       setLocationError("Choose a location");
       return;
     }
-    console.log("Searching for:", query);
-    navigate('/itinerary_creation', { state: { searchQuery: query } });
+  
+    try {
+      // Step 1: Geocode the user's input query to get latitude and longitude
+      const geocodeResponse = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
+        params: {
+          address: query, // The location query (e.g., "Boston, MA")
+          key: GOOGLE_MAPS_API_KEY, // Your Google Maps API key
+        },
+      });
+  
+      // Check if geocoding was successful
+      if (geocodeResponse.data.status !== 'OK') {
+        setLocationError('Unable to find location. Please try again.');
+        return;
+      }
+  
+      const location = geocodeResponse.data.results[0].geometry.location;
+      const coords = {
+        latitude: location.lat,
+        longitude: location.lng,
+      };
+      console.log("Location coordinates:", coords);
+  
+      // Step 2: Navigate to the itinerary creation page, passing the coordinates
+      navigate('/itinerary_creation', {
+        state: {
+          startingLocation: {
+            name: query,
+            location: {
+              lat: coords.latitude,
+              lng: coords.longitude,
+            },
+          },
+        },
+      });
+  
+    } catch (err) {
+      console.error("Error during geocoding:", err);
+      setLocationError("Failed to fetch location. Try again.");
+    }
   };
+  
+  
 
   // Handle keyboard navigation
   const handleKeyDown = (e) => {
@@ -92,7 +142,7 @@ function Home() {
         setSuggestions([]);
         setShouldFetchSuggestions(false);
         setLocationChosen(true);
-        setLocationError(""); // Clear error when location is chosen.
+        setLocationError(""); // Clear error when location is chosen
       } else {
         handleSearch();
       }

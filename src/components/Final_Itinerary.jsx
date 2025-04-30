@@ -9,6 +9,8 @@ function Final_Itinerary() {
   const [directionsResponse, setDirectionsResponse] = useState(null);
   const [totalTime, setTotalTime] = useState(null);
   const [selectedItems, setSelectedItems] = useState([]);
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+  
 
   const location = useLocation();
   const initialItems = location.state?.selectedItems || [];
@@ -225,11 +227,33 @@ function Final_Itinerary() {
               zoom={12}
               onLoad={() => setMapLoaded(true)}
             >
+              {selectedItems.map((item, index) => (
+                <Marker
+                key={index}
+                position={item.location}
+                label={
+                  hoveredIndex === index
+                    ? undefined // remove label when using blue dot
+                    : {
+                        text: String.fromCharCode(65 + index),
+                        color: 'white',
+                        fontWeight: 'bold',
+                      }
+                }
+                icon={
+                  hoveredIndex === index
+                    ? 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
+                    : undefined // use default marker
+                }
+              />
+              
+              ))}
               {directionsResponse && (
                 <DirectionsRenderer
                   options={{
                     directions: directionsResponse,
-                    preserveViewport: true,
+                    // preserveViewport: true,
+                    suppressMarkers: true
                   }}
                 />
               )}
@@ -255,11 +279,15 @@ function Final_Itinerary() {
                 const label = String.fromCharCode(65 + index); // A = 65
                 return (
                   <li key={index}>
-                    <div style={cardStyle}>
-                      <h6>{label}. {item.name}</h6>
-                      <p>{item.address || 'Loading address...'}</p>
-                    </div>
-                  </li>
+  <div
+    style={cardStyle}
+    onMouseEnter={() => setHoveredIndex(index)}
+    onMouseLeave={() => setHoveredIndex(null)}
+  >
+    <h6>{label}. {item.name}</h6>
+    <p>{item.address || 'Loading address...'}</p>
+  </div>
+</li>
                 );
               })
             ) : (

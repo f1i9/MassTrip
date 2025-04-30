@@ -7,7 +7,7 @@ import { useSwipeable } from 'react-swipeable';
 
 function Itinerary_Creation_Page() {
   const [destination, setDestination] = useState('');
-  const [radius, setRadius] = useState('20000'); 
+  const [radius, setRadius] = useState('200000'); 
   const [searchQuery, setSearchQuery] = useState('');
   const [attractionItems, setAttractionItems] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
@@ -23,10 +23,15 @@ function Itinerary_Creation_Page() {
   useEffect(() => {
     if (location.state?.searchQuery) {
       const query = location.state.searchQuery.trim();
-      setSearchQuery(query); 
+      setSearchQuery(query); // this sets the search input
       if (query) {
-        fetchNearbyAttractions(query);
+        fetchNearbyAttractions(query); // this fetches results for center column
       }
+    }
+  
+    // Only add startingLocation to the right column
+    if (location.state?.startingLocation) {
+      setSelectedItems([location.state.startingLocation]);
     }
   }, [location.state]);
 
@@ -309,7 +314,7 @@ function Itinerary_Creation_Page() {
           </ul>
         )}
         <div className="mt-3 d-grid">
-          <Button id="roadtrip-btn" variant="primary" onClick={handleRoadTripClick}>Take a road trip!</Button>
+          <Button id="roadtrip-btn" variant="primary" onClick={handleRoadTripClick}>Review My Trip</Button>
           <div className="mt-2 d-grid">
             <Button variant="outline-secondary" onClick={() => setSelectedItems([])}>
               Clear Itinerary
