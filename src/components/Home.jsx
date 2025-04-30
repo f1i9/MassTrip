@@ -12,7 +12,7 @@ function Home() {
   const [activeIndex, setActiveIndex] = useState(-1);
   const [shouldFetchSuggestions, setShouldFetchSuggestions] = useState(true);
   const [locationChosen, setLocationChosen] = useState(false);
-  const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
+  const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   
   const navigate = useNavigate();
   const inputRef = useRef(null);
