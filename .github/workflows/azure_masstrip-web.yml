@@ -9,8 +9,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
     permissions:
       contents: read
 
@@ -23,21 +21,22 @@ jobs:
         with:
           node-version: '18'
 
+      # Install frontend dependencies (root package.json)
       - name: Install frontend dependencies
         run: npm install
 
-      - name: Debug: Show injected VITE env key (obfuscated)
-        run: echo "VITE_GOOGLE_MAPS_API_KEY=${VITE_GOOGLE_MAPS_API_KEY:0:5}****"
-
+      # Build frontend (outputs dist/)
       - name: Build Vite frontend
         run: npm run build
 
+      # Install backend dependencies (backend/package.json)
       - name: Install backend dependencies
         run: |
           cd backend
           npm install
           cd ..
 
+      # Prepare deployable folder
       - name: Prepare deployment folder
         run: |
           mkdir deploy
@@ -45,12 +44,14 @@ jobs:
           cp -r dist deploy/dist
           echo "Deploy folder ready"
 
+      # Zip for deployment
       - name: Zip artifact for deployment
         run: |
           cd deploy
           zip -r ../release.zip .
           cd ..
 
+      # Upload artifact to next job
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
