@@ -275,12 +275,6 @@ function AddLandmark() {
       });
     };
   }, [previews]);
-  useEffect(() => {
-    document.body.style.overflow = 'auto';
-    return () => {
-      document.body.style.overflow = 'hidden';
-    };
-  }, []);
 
   const categoryIcons = {
     'Museum': '🏛️',
