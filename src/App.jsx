@@ -14,20 +14,17 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from "../src/context/AuthContext";
 import AuthForm from "./components/AuthForm";
 
-// Page wrapper component to control scrolling behavior
 function PageWrapper({ children }) {
   const location = useLocation();
   const isHomePage = location.pathname === '/';
 
   useEffect(() => {
-    // Apply no-scroll style only to the home page
     if (isHomePage) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'auto';
     }
 
-    // Clean up when component unmounts
     return () => {
       document.body.style.overflow = 'auto';
     };
@@ -47,7 +44,6 @@ function App() {
   console.log("isAuthenticated:", isAuthenticated);
 
 
-  // close the menu when a link is clicked
   const handleLinkClick = () => {
     setIsNavExpanded(false);
   };
@@ -81,7 +77,6 @@ function App() {
     };
   }, [isNavExpanded]);
 
-  // Mobile navbar style
   const mobileNavStyle = {
     position: 'fixed',
     top: 0,
@@ -98,13 +93,12 @@ function App() {
     boxShadow: isNavExpanded ? '2px 0 10px rgba(0,0,0,0.2)' : 'none',
     display: 'flex',
     flexDirection: 'column',
-    opacity: 1 // Keep opacity at 1 to maintain color consistency
+    opacity: 1 
   };
 
-  // Style for the login/signup button with darker green color
   const loginButtonStyle = {
-    backgroundColor: '#00704d', // Darker green color
-    color: 'white', // White text for better contrast
+    backgroundColor: '#00704d', 
+    color: 'white', 
     border: 'none',
     borderRadius: '5px',
     padding: '10px 20px',
@@ -114,27 +108,25 @@ function App() {
     transition: 'background-color 0.2s ease'
   };
 
-  // Style for footer text in menu
   const menuFooterStyle = {
     color: 'white',
     fontSize: '0.85rem',
     textAlign: 'center',
-    marginTop: 'auto', // Push to the bottom
+    marginTop: 'auto', 
     paddingTop: '20px',
     paddingBottom: '15px',
     opacity: 0.9
   };
 
-  // Fixed background style for clickable area outside menu
   const overlayStyle = {
     position: 'fixed',
     top: 0,
-    left: isNavExpanded ? '250px' : 0, // Start after the menu
-    width: isNavExpanded ? 'calc(100% - 250px)' : '100%', // Cover only the area not covered by menu
+    left: isNavExpanded ? '250px' : 0, 
+    width: isNavExpanded ? 'calc(100% - 250px)' : '100%',
     height: '100vh',
-    backgroundColor: 'transparent', // Make it transparent instead of semi-transparent
-    zIndex: 999, // Below the menu but above content
-    cursor: 'pointer' // Show pointer cursor to indicate clickable
+    backgroundColor: 'transparent', 
+    zIndex: 999, 
+    cursor: 'pointer' 
   };
 
   return (
@@ -209,7 +201,6 @@ function App() {
               </Navbar.Brand>
             </div>
 
-            {/* Desktop navigation */}
             {!isMobile && (
               <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="ms-auto">
@@ -259,7 +250,6 @@ function App() {
           </Container>
         </Navbar>
 
-        {/* Mobile navigation menu */}
         {isMobile && (
           <div style={mobileNavStyle}>
             <div>
@@ -305,14 +295,13 @@ function App() {
                   FAQ
                 </Nav.Link>
                 
-                {/* Sign In/Sign Up button directly after FAQ */}
                 <Button
                   as={Link}
                   to="/signup"
                   style={{
                     ...loginButtonStyle,
-                    marginTop: '8px', // Reduced margin to be closer to FAQ link
-                    marginBottom: '15px' // Add some bottom margin for spacing
+                    marginTop: '8px', 
+                    marginBottom: '15px' 
                   }}
                   onClick={handleLinkClick}
                 >
@@ -327,7 +316,6 @@ function App() {
           </div>
         )}
 
-        {/* Transparent overlay to detect clicks outside menu */}
         {isNavExpanded && isMobile && (
           <div 
             style={overlayStyle}
@@ -343,15 +331,12 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/itinerary_creation" element={<Itinerary_Creation_Page />} />
-            {/* <Route path="/login" element={<Login />} /> */}
             <Route path="/signup" element={<SignUp />} />
-            {/* <Route path="/signup" element={<AuthForm />} /> */}
 
             <Route path="/contactUs" element={<ContactUs />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/addlandmark" element={<AddLandmark />} />
             <Route path="/final_itinerary" element={<Final_Itinerary />} />
-            {/* <Route path="/auth" element={<AuthForm />} /> */}
             
           </Routes>
         </Container>

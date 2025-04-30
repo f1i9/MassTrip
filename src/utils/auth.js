@@ -9,7 +9,6 @@ import {
     signOut
   } from "firebase/auth";
   
-  // Sign up with email and password
   export const signUp = async (email, password) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -19,7 +18,6 @@ import {
     }
   };
   
-  // Sign in with email and password
   export const signIn = async (email, password) => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -29,7 +27,6 @@ import {
     }
   };
   
-  // Sign in with Google
   export const signInWithGoogle = async () => {
     try {
       const userCredential = await signInWithPopup(auth, googleProvider);
@@ -39,7 +36,6 @@ import {
     }
   };
   
-  // Sign out
   export const logOut = async () => {
     try {
       await signOut(auth);

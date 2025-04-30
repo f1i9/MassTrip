@@ -11,13 +11,11 @@ function SignUp() {
   const [error, setError] = useState("");
   const { currentUser } = useAuth();
   
-  // Form validation states
   const [formErrors, setFormErrors] = useState({
     email: '',
     password: ''
   });
   
-  // Track if fields have been touched
   const [touched, setTouched] = useState({
     email: false,
     password: false
@@ -25,7 +23,6 @@ function SignUp() {
 
   const navigate = useNavigate();
 
-  // Validate form fields whenever they change
   useEffect(() => {
     if (touched.email) {
       validateField('email', email);
@@ -36,7 +33,6 @@ function SignUp() {
     }
   }, [email, password, touched, isSignUp]);
 
-  // Validate individual field
   const validateField = (field, value) => {
     let error = '';
     
@@ -71,12 +67,12 @@ function SignUp() {
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
-    setError(""); // Clear any Firebase errors when user types
+    setError(""); 
   };
   
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
-    setError(""); // Clear any Firebase errors when user types
+    setError(""); 
   };
   
   const handleBlur = (e) => {
@@ -91,7 +87,6 @@ function SignUp() {
   const handleAuth = async (e) => {
     e.preventDefault();
     
-    // Mark all fields as touched
     setTouched({
       email: true,
       password: true
@@ -102,7 +97,7 @@ function SignUp() {
     const passwordValid = validateField('password', password);
     
     if (!emailValid || !passwordValid) {
-      return; // Don't proceed if validation fails
+      return; 
     }
     
     setError("");
@@ -147,13 +142,11 @@ function SignUp() {
   return (
     <Container className="d-flex justify-content-center align-items-center" style={{ padding: '0 15px' }}>
       <div className="w-100" style={{ maxWidth: '400px' }}>
-        {/* Desktop version (with card) */}
         <div className="d-none d-md-block">
           <Card className="p-4 shadow-lg">
             <Card.Body>
               <h2 className="text-center mb-4">{isSignUp ? "Sign Up" : "Sign In"}</h2>
               <Form noValidate onSubmit={handleAuth}>
-                {/* Email Input */}
                 <Form.Group className="mb-3 position-relative">
                   <Form.Label>Email address</Form.Label>
                   <Form.Control
@@ -170,7 +163,6 @@ function SignUp() {
                   </div>
                 </Form.Group>
 
-                {/* Password Input */}
                 <Form.Group className="mb-3 position-relative">
                   <Form.Label>Password</Form.Label>
                   <Form.Control
@@ -187,7 +179,6 @@ function SignUp() {
                   </div>
                 </Form.Group>
 
-                {/* Buttons */}
                 <div className="d-grid gap-2">
                   <Button variant="success" type="submit">
                     {isSignUp ? "Sign Up" : "Sign In"}
@@ -222,11 +213,9 @@ function SignUp() {
           </Card>
         </div>
 
-        {/* Mobile version (no card) */}
         <div className="d-block d-md-none">
           <h2 className="text-center mt-4 mb-4">{isSignUp ? "Sign Up" : "Sign In"}</h2>
           <Form noValidate onSubmit={handleAuth}>
-            {/* Email Input */}
             <Form.Group className="mb-3 position-relative">
               <Form.Label>Email address</Form.Label>
               <Form.Control
@@ -244,7 +233,6 @@ function SignUp() {
               </div>
             </Form.Group>
 
-            {/* Password Input */}
             <Form.Group className="mb-3 position-relative">
               <Form.Label>Password</Form.Label>
               <Form.Control
@@ -262,7 +250,6 @@ function SignUp() {
               </div>
             </Form.Group>
 
-            {/* Buttons */}
             <div className="d-grid gap-2">
               <Button variant="success" type="submit">
                 {isSignUp ? "Sign Up" : "Sign In"}
