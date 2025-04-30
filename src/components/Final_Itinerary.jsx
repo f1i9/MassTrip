@@ -9,13 +9,11 @@ function Final_Itinerary() {
   const [directionsResponse, setDirectionsResponse] = useState(null);
   const [totalTime, setTotalTime] = useState(null);
   const [selectedItems, setSelectedItems] = useState([]);
-  const [hoveredIndex, setHoveredIndex] = useState(null);
-  
 
   const location = useLocation();
   const initialItems = location.state?.selectedItems || [];
 
-  const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+  const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
 
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: GOOGLE_MAPS_API_KEY,
@@ -227,24 +225,11 @@ function Final_Itinerary() {
               zoom={12}
               onLoad={() => setMapLoaded(true)}
             >
-              {selectedItems.map((item, index) => (
-                <Marker
-                  key={index}
-                  position={item.location}
-                  label={String.fromCharCode(65 + index)}
-                  icon={
-                    hoveredIndex === index
-                      ? 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png' // highlighted icon
-                      : 'http://maps.google.com/mapfiles/ms/icons/red-dot.png' // normal icon
-                  }
-                />
-              ))}
               {directionsResponse && (
                 <DirectionsRenderer
                   options={{
                     directions: directionsResponse,
-                    // preserveViewport: true,
-                    suppressMarkers: true
+                    preserveViewport: true,
                   }}
                 />
               )}
@@ -270,15 +255,11 @@ function Final_Itinerary() {
                 const label = String.fromCharCode(65 + index); // A = 65
                 return (
                   <li key={index}>
-  <div
-    style={cardStyle}
-    onMouseEnter={() => setHoveredIndex(index)}
-    onMouseLeave={() => setHoveredIndex(null)}
-  >
-    <h6>{label}. {item.name}</h6>
-    <p>{item.address || 'Loading address...'}</p>
-  </div>
-</li>
+                    <div style={cardStyle}>
+                      <h6>{label}. {item.name}</h6>
+                      <p>{item.address || 'Loading address...'}</p>
+                    </div>
+                  </li>
                 );
               })
             ) : (
