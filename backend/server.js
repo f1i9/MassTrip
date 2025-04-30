@@ -31,8 +31,7 @@ app.use(express.json());
 
 // === API Routes ===
 
-// Support both with and without trailing slash
-app.get(['/api/location', '/api/location/'], async (req, res) => {
+app.get('/api/location', async (req, res) => {
   try {
     const ipResponse = await axios.get('http://ip-api.com/json');
     const { lat, lon } = ipResponse.data;
@@ -43,7 +42,7 @@ app.get(['/api/location', '/api/location/'], async (req, res) => {
   }
 });
 
-app.get(['/api/nearby', '/api/nearby/'], async (req, res) => {
+app.get('/api/nearby', async (req, res) => {
   const { lat, lng, radius = 1500, type = 'restaurant' } = req.query;
 
   try {
@@ -63,9 +62,11 @@ app.get(['/api/nearby', '/api/nearby/'], async (req, res) => {
   }
 });
 
-app.get(['/api/autocomplete', '/api/autocomplete/'], async (req, res) => {
+app.get('/api/autocomplete', async (req, res) => {
   const input = req.query.input;
+  console.log("Received input:", input);
   const googleMapsUrl = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${input}&key=${GOOGLE_API_KEY}`;
+  console.log("Requesting URL:", googleMapsUrl);
 
   try {
     const response = await axios.get(googleMapsUrl);
@@ -77,6 +78,8 @@ app.get(['/api/autocomplete', '/api/autocomplete/'], async (req, res) => {
 });
 
 // === Serve Static Frontend Files ===
+
+// Serve static files from the Vite build output (dist folder)
 app.use(express.static(path.join(__dirname, 'dist')));
 
 // Fallback route: serve index.html for all non-API requests
@@ -85,6 +88,7 @@ app.get('*', (req, res) => {
 });
 
 // === Start the Server ===
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
