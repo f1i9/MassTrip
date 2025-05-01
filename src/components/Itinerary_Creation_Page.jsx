@@ -124,16 +124,26 @@ function Itinerary_Creation_Page() {
   };
 
   const addToItinerary = (item) => {
-    setSelectedItems([...selectedItems, item]);
+    if (!selectedItems.some(i => i.id === item.id)) {
+      setSelectedItems([...selectedItems, item]);
+      setAttractionItems(prevItems => prevItems.filter(i => i.id !== item.id));
+    }
   };
+  
+  
 
   const removeAttraction = (id) => {
     setAttractionItems(attractionItems.filter(item => item.id !== id));
   };
 
   const removeFromItinerary = (id) => {
-    setSelectedItems(selectedItems.filter(item => item.id !== id));
+    const itemToRestore = selectedItems.find(item => item.id === id);
+    if (itemToRestore) {
+      setAttractionItems(prevItems => [itemToRestore, ...prevItems]);
+    }
+    setSelectedItems(prevItems => prevItems.filter(item => item.id !== id));
   };
+  
 
   const totalPages = Math.min(10, Math.ceil(attractionItems.length / itemsPerPage));
   const paginatedItems = attractionItems.slice(
@@ -300,7 +310,7 @@ function Itinerary_Creation_Page() {
                 <Button 
                   variant="gray" 
                   size="sm" 
-                  on-powered-by-xaiClick={() => removeFromItinerary(item.id)}
+                  onClick={() => removeFromItinerary(item.id)}
                 >
                   ×
                 </Button>
