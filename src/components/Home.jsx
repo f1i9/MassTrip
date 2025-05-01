@@ -34,11 +34,11 @@ function Home() {
       setShouldFetchSuggestions(true);
       setLocationChosen(false);
     }
-    // Clear the location selection error if user continues typing
+    // Clears location selection error if user continues typing
     setLocationError("");
   };
 
-  // Fetch autocomplete suggestions from the backend when input is valid
+  // Fetch autocomplete suggestions from backend when input is valid
   useEffect(() => {
     if (query.length > 2 && shouldFetchSuggestions) {
       const fetchSuggestions = async () => {
@@ -74,8 +74,8 @@ function Home() {
       // Geocode user's input query to get lat and long
       const geocodeResponse = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
         params: {
-          address: query, // The location query (e.g., "Boston, MA")
-          key: GOOGLE_MAPS_API_KEY, // Your Google Maps API key
+          address: query,
+          key: GOOGLE_MAPS_API_KEY,
         },
       });
   
@@ -122,7 +122,7 @@ function Home() {
         setActiveIndex(activeIndex - 1);
       }
     } else if (e.key === 'Enter') {
-      // If location has already been chosen, pressing Enter executes 'Go' action
+      // If location has been chosen, pressing Enter executes 'Go' action
       if (locationChosen) {
         handleSearch();
       } else if (activeIndex >= 0) {
