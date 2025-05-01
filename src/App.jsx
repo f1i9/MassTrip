@@ -178,13 +178,35 @@ function App() {
               </Navbar.Toggle>
             </div>
 
+            {isMobile ? (
+              <div
+                style={{
+                  position: 'absolute',
+                  left: '50%',
+                  top: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  zIndex: 1000,
+                }}
+              >
+                <Navbar.Brand
+                  as={Link}
+                  to="/"
+                  style={{
+                    color: 'white',
+                    fontWeight: 'bold',
+                    fontSize: '1.5rem',
+                  }}
+                  onClick={handleLinkClick}
+                >
+                  MassTrip
+                </Navbar.Brand>
+              </div>
+            ) : (
+
             <div
               style={{
-                position: 'absolute',
-                left: '50%',
-                top: '50%',
-                transform: 'translate(-50%, -50%)',
-                zIndex: 1000,
+                marginLeft: 'auto',
+                marginRight: '1rem',
               }}
             >
               <Navbar.Brand
@@ -193,13 +215,15 @@ function App() {
                 style={{
                   color: 'white',
                   fontWeight: 'bold',
-                  fontSize: '1.5rem'
+                  fontSize: '1.5rem',
+                  paddingLeft: '15px'
                 }}
                 onClick={handleLinkClick}
               >
                 MassTrip
               </Navbar.Brand>
             </div>
+            )}
 
             {!isMobile && (
               <Navbar.Collapse id="basic-navbar-nav">
