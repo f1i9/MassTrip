@@ -23,13 +23,12 @@ function Itinerary_Creation_Page() {
   useEffect(() => {
     if (location.state?.searchQuery) {
       const query = location.state.searchQuery.trim();
-      setSearchQuery(query); // this sets the search input
+      setSearchQuery(query);
       if (query) {
-        fetchNearbyAttractions(query); // this fetches results for center column
+        fetchNearbyAttractions(query); 
       }
     }
   
-    // Only add startingLocation to the right column
     if (location.state?.startingLocation) {
       setSelectedItems([location.state.startingLocation]);
     }
@@ -174,7 +173,6 @@ function Itinerary_Creation_Page() {
       <Row>
         <Col md={3} className="mt-5 pt-4" />
 
-        {/* Middle column - attraction list and controls */}
         <Col md={6}>
           <Form.Group className="mb-3">
             <InputGroup style={{ display: 'block', width: '100%' }}>
@@ -205,9 +203,9 @@ function Itinerary_Creation_Page() {
                   ref={provided.innerRef}
                   className="attractions-container"
                   style={{
-                    maxHeight: '400px', // set the height of google api results
+                    maxHeight: '400px', 
                     overflow: 'auto',
-                    paddingRight: '5px' // avoiding scrollbar overlap
+                    paddingRight: '5px' 
                   }}
                 >
                   {loading ? (
@@ -271,7 +269,6 @@ function Itinerary_Creation_Page() {
           </div>
 
           <div className="mt-3 d-flex gap-2">
-          {/* updated the button to clear search results EK 4/16 */}
           <Button variant="primary" className="flex-grow-1" onClick={handleClear}>Clear</Button> 
             <Button 
               id="regenerate-btn" 
@@ -279,13 +276,11 @@ function Itinerary_Creation_Page() {
               className="flex-grow-1" 
               onClick={handleRegenerate}
             >
-              {/* changed name of button from regenerate to generate */}
               Generate 
             </Button>
           </div>
         </Col>
 
-   {/* Right column - current itinerary (desktop) */}
    <Col md={3} className="d-none d-md-block">
       <div className="selected-items-container p-3 border rounded bg-light border-0 rounded-4" style={{ maxHeight: '400px', overflowY: 'auto' }}>
         <h6 className="text-center">Current Itinerary</h6>
@@ -324,7 +319,6 @@ function Itinerary_Creation_Page() {
       </div>
     </Col>
 
-  {/* Mobile sidebar toggle button */}
   <div
   className="d-md-none position-fixed top-0 end-0 mt-3 me-3 rounded-circle text-white border-0 text-center"
   style={{ zIndex: 1100, width: '40px', height: '40px', lineHeight: '40px', padding: 0, backgroundColor: 'transparent !important', cursor: 'pointer' }}
@@ -333,7 +327,6 @@ function Itinerary_Creation_Page() {
 ▶
 </div>
 
-{/* Mobile sidebar */}
 <div
   className={`d-md-none position-fixed top-0 end-0 h-100 p-3 ${isSidebarOpen ? '' : 'translate-x-full'}`}
   style={{ backgroundColor: "#009766", width: '80%', maxWidth: '300px', zIndex: 1000, transition: 'transform 0.3s ease-in-out', transform: isSidebarOpen ? 'translateX(0)' : 'translateX(100%)' }}
@@ -375,7 +368,6 @@ function Itinerary_Creation_Page() {
       </div>
     </div>
 
-    {/* Overlay for mobile when sidebar is open */}
     <div
       className={`d-md-none position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 ${isSidebarOpen ? 'd-block' : 'd-none'}`}
       style={{ zIndex: 999 }}

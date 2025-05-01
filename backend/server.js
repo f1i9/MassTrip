@@ -6,30 +6,23 @@ import cors from 'cors';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
-// Needed for ES Modules (__dirname simulation)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Load environment variables from .env
 dotenv.config();
 
 const app = express();
 
-// Use Azure provided PORT, or default to 3001 locally
 const port = process.env.PORT || 3001;
 
-// Load the Google API Key
 const GOOGLE_API_KEY = process.env.VITE_GOOGLE_API_KEY;
 if (!GOOGLE_API_KEY) {
   console.error('GOOGLE_API_KEY is not set in environment variables.');
   process.exit(1);
 }
 
-// Middleware
 app.use(cors());
 app.use(express.json());
-
-// === API Routes ===
 
 app.get('/api/location', async (req, res) => {
   try {
@@ -77,17 +70,11 @@ app.get('/api/autocomplete', async (req, res) => {
   }
 });
 
-// === Serve Static Frontend Files ===
-
-// Serve static files from the Vite build output (dist folder)
 app.use(express.static(path.join(__dirname, 'dist')));
 
-// Fallback route: serve index.html for all non-API requests
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
-
-// === Start the Server ===
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
