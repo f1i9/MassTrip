@@ -10,7 +10,12 @@ function Final_Itinerary() {
   const [totalTime, setTotalTime] = useState(null);
   const [selectedItems, setSelectedItems] = useState([]);
   const [hoveredIndex, setHoveredIndex] = useState(null);
-  
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const location = useLocation();
   const initialItems = location.state?.selectedItems || [];
@@ -23,9 +28,9 @@ function Final_Itinerary() {
   
   const mapContainerStyle = {
     width: '100%',
-    height: '85vh',
+    height: isMobile ? '300px' : '85vh',
     borderRadius: '20px'
-  };
+  };  
 
   const defaultCenter = {
     lat: 42.3601,
@@ -41,20 +46,21 @@ function Final_Itinerary() {
 
   const containerStyle = {
     display: 'flex',
+    flexDirection: window.innerWidth < 768 ? 'column' : 'row',
     height: '100vh',
   };
 
   const leftStyle = {
-    width: '70%',
+    width: isMobile ? '100%' : '70%',
     padding: '20px',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
     alignItems: 'center',
   };
-
+  
   const rightStyle = {
-    width: '30%',
+    width: isMobile ? '100%' : '30%',
     padding: '20px',
     backgroundColor: '#d0d0d0',
     display: 'flex',
@@ -62,6 +68,7 @@ function Final_Itinerary() {
     justifyContent: 'space-between',
     alignItems: 'center',
   };
+  
 
   const contentStyle = {
     marginBottom: '20px',
@@ -214,7 +221,6 @@ function Final_Itinerary() {
     doc.text(`Total Time: ${totalTime || 'Calculating...'}`, 20, yPosition);
     doc.save('itinerary.pdf');
   };
-  
 
   return (
     <div style={containerStyle}>
@@ -233,7 +239,7 @@ function Final_Itinerary() {
                 position={item.location}
                 label={
                   hoveredIndex === index
-                    ? undefined // remove label when using blue dot
+                    ? undefined
                     : {
                         text: String.fromCharCode(65 + index),
                         color: 'white',
@@ -243,7 +249,7 @@ function Final_Itinerary() {
                 icon={
                   hoveredIndex === index
                     ? 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
-                    : undefined // use default marker
+                    : undefined
                 }
               />
               
@@ -276,18 +282,18 @@ function Final_Itinerary() {
           <ul style={{ listStyleType: 'none', paddingLeft: '0' }}>
             {selectedItems.length > 0 ? (
               selectedItems.map((item, index) => {
-                const label = String.fromCharCode(65 + index); // A = 65
+                const label = String.fromCharCode(65 + index);
                 return (
                   <li key={index}>
-  <div
-    style={cardStyle}
-    onMouseEnter={() => setHoveredIndex(index)}
-    onMouseLeave={() => setHoveredIndex(null)}
-  >
-    <h6>{label}. {item.name}</h6>
-    <p>{item.address || 'Loading address...'}</p>
-  </div>
-</li>
+                    <div
+                      style={cardStyle}
+                      onMouseEnter={() => setHoveredIndex(index)}
+                      onMouseLeave={() => setHoveredIndex(null)}
+                    >
+                      <h6>{label}. {item.name}</h6>
+                      <p>{item.address || 'Loading address...'}</p>
+                    </div>
+                  </li>
                 );
               })
             ) : (
