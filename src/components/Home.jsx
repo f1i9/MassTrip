@@ -32,7 +32,6 @@ function Home() {
     } else {
       setInputError("");
       setShouldFetchSuggestions(true);
-      // Reset this flag if user makes changes after selecting suggestion
       setLocationChosen(false);
     }
     // Clear the location selection error if user continues typing
@@ -63,15 +62,6 @@ function Home() {
     }
   }, [query, shouldFetchSuggestions]);
 
-  // Geolocation handling
-  const getLocation = () =>
-    new Promise((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => resolve(pos.coords),
-        (err) => reject(err)
-      );
-    });
-
   // Handle search logic and geolocation
   const handleSearch = async () => {
     if (inputError) return;
@@ -81,7 +71,7 @@ function Home() {
     }
   
     try {
-      // Step 1: Geocode the user's input query to get latitude and longitude
+      // Geocode user's input query to get lat and long
       const geocodeResponse = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
         params: {
           address: query, // The location query (e.g., "Boston, MA")
@@ -102,7 +92,7 @@ function Home() {
       };
       console.log("Location coordinates:", coords);
   
-      // Step 2: Navigate to the itinerary creation page, passing the coordinates
+      // Navigate to itinerary creation page, passing coordinates
       navigate('/itinerary_creation', {
         state: {
           startingLocation: {
@@ -121,8 +111,6 @@ function Home() {
     }
   };
   
-  
-
   // Handle keyboard navigation
   const handleKeyDown = (e) => {
     if (e.key === 'ArrowDown') {
@@ -167,7 +155,7 @@ function Home() {
     setActiveIndex(-1);
   };
 
-  // Close suggestions if user clicks outside the input box
+  // Close suggestions if user clicks outside input box
   const handleClickOutside = (event) => {
     if (inputRef.current && !inputRef.current.contains(event.target)) {
       setSuggestions([]);
